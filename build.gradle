@@ -18,6 +18,7 @@ buildscript {
         gson_version = '2.10'
         swipe_refresh_version = '0.24.2-alpha'
         datastore_version = '1.0.0'
+        exo_player_version = '2.18.2'
     }
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$dagger_hilt_version"
