@@ -92,4 +92,9 @@ dependencies {
 
     //Data Store Preferences
     implementation("androidx.datastore:datastore-preferences:$datastore_version")
+
+    //Exo Player
+    api "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
+    api "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
+    api "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
 }
