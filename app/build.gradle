@@ -68,7 +68,12 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_lifecycle_viewmodel_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_material_icons_version"
     implementation("androidx.navigation:navigation-compose:$compose_nav_version")
-    implementation "com.google.accompanist:accompanist-navigation-animation:$compose_nav_animation_version"
+
+    //Accompanist dependencies
+    implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_animation_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_permissions_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_systemui_controller_version"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$swipe_refresh_version"
 
     //Dagger-Hilt
     implementation "com.google.dagger:hilt-android:$dagger_hilt_version"
@@ -87,9 +92,6 @@ dependencies {
     //Splash Screen API
     implementation("androidx.core:core-splashscreen:$splash_screen_api_version")
 
-    //Swipe Refresh
-    implementation "com.google.accompanist:accompanist-swiperefresh:$swipe_refresh_version"
-
     //Data Store Preferences
     implementation("androidx.datastore:datastore-preferences:$datastore_version")
 
@@ -97,4 +99,8 @@ dependencies {
     api "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
     api "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
     api "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
+
+    //Glide
+    implementation "com.github.bumptech.glide:compose:$glide_compose_version"
+
 }

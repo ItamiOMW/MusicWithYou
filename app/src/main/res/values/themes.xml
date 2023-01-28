@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.MusicWithYou" parent="android:Theme.Material.Light.NoActionBar">
-
+        <item name="android:statusBarColor">#FFFFFFFF</item>
     </style>
 </resources>

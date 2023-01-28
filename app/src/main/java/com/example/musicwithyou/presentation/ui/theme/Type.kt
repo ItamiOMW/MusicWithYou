@@ -20,6 +20,16 @@ val CustomFontFamily = FontFamily(
 
 val CustomTypography = Typography(
     defaultFontFamily = CustomFontFamily,
+    h1 = TextStyle(
+        fontWeight = FontWeight.Black,
+        fontSize = 96.sp,
+        letterSpacing = (-1.5).sp
+    ),
+    h2 = TextStyle(
+        fontWeight = FontWeight.Black,
+        fontSize = 60.sp,
+        letterSpacing = (-0.5).sp
+    ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Black,
         fontSize = 20.sp,

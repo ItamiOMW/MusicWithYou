@@ -12,11 +12,12 @@ val DarkColorScheme = darkColors(
     onPrimary = White,
     secondary = White,
     onSecondary = DarkBlue,
+    secondaryVariant = Gray,
     error = Pink,
     onError = White,
     background = DarkBlue,
     onBackground = White,
-    surface = DarkBlue,
+    surface = LightGray,
     onSurface = White
 )
 
@@ -25,12 +26,14 @@ val LightColorScheme = lightColors(
     onPrimary = DarkBlue,
     secondary = DarkBlue,
     onSecondary = White,
+    secondaryVariant = Gray,
     error = Pink,
     onError = White,
     background = White,
     onBackground = DarkBlue,
-    surface = White,
+    surface = LightGray,
     onSurface = DarkBlue,
+    primaryVariant = White
 )
 
 @Composable
