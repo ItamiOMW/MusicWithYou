@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">Music With You</string>
+    <string name="songs">Songs</string>
+    <string name="playlists">Playlists</string>
+    <string name="albums">Albums</string>
+    <string name="icon_desc">icon</string>
+    <string name="dot">·</string>
+    <string name="options_desc">options</string>
+    <string name="song_image_desc">image of the song</string>
+    <string name="shuffle_icon_desc">Shuffle songs</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="drawer_desc">Open navigation menu</string>
+    <string name="search_desc">Open search screen</string>
+    <string name="permission_rationale_message_default">To use this application functionality, you need to give us the permission</string>
+    <string name="permission_was_denied">Permission was denied.</string>
+    <string name="to_listen_to_music_need">To listen to music you need:</string>
+    <string name="first_open_settings">1. Open settings</string>
+    <string name="second_open_permissions">2. Click on the Permissions</string>
+    <string name="third_turn_on_storage">3. Turn on Storage</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="sort_song_icon_desc">Open song sort menu</string>
+    <string name="play_next">Play next</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="install_as_ringtone">Install as ringtone</string>
+    <string name="delete_from_device">Delete from device</string>
+    <string name="songs_picker_desc">Manage songs</string>
+    <string name="sort_by">Sort by</string>
+    <string name="descending">Descending</string>
+    <string name="ascending">Ascending</string>
+    <string name="cancel">Cancel</string>
+    <string name="okay">Ok</string>
+    <string name="duration">Duration</string>
+    <string name="album">Album</string>
+    <string name="artist">Artist</string>
+    <string name="song_title">Song title</string>
 </resources>

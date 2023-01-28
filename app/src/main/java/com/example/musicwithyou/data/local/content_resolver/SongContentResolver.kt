@@ -2,6 +2,7 @@ package com.example.musicwithyou.data.local.content_resolver
 
 import android.app.Application
 import android.content.ContentUris
+import android.net.Uri
 import android.provider.MediaStore
 import com.example.musicwithyou.domain.models.Song
 import javax.inject.Inject
@@ -49,7 +50,7 @@ class SongContentResolver @Inject constructor(
             val artistName = cursor.getString(
                 cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
             )
-            val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
+            val uri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId)
             val song = Song(
                 id,
                 title,
