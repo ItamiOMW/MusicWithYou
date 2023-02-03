@@ -1,6 +1,5 @@
 package com.example.musicwithyou.presentation.components
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,9 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,30 +22,19 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.utils.timestampToDuration
-import com.example.musicwithyou.utils.timestampToSeconds
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SongCard(
     song: Song,
-    timePlayedSeconds: Long,
     onSongClicked: (Song) -> Unit,
     onOptionsClicked: (Song) -> Unit,
     isSongPlaying: Boolean = false,
     backgroundColor: Color = Color.Transparent,
     secondaryVariantColor: Color = MaterialTheme.colors.surface,
 ) {
-    val percentageOfPlayed = remember {
-        Animatable(0f)
-    }
 
-    val percentageTimePlayed =
-        (timePlayedSeconds.toFloat() / song.duration.timestampToSeconds().toFloat())
-
-    LaunchedEffect(percentageTimePlayed) {
-        percentageOfPlayed.animateTo(percentageTimePlayed)
-    }
 
     Row(
         modifier = Modifier
@@ -85,19 +70,7 @@ fun SongCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .align(Alignment.CenterVertically)
-                .drawBehind {
-                    if (isSongPlaying) {
-                        drawRoundRect(
-                            color = secondaryVariantColor.copy(alpha = 0.15f),
-                            size = Size(
-                                width = this.size.width * percentageTimePlayed,
-                                height = this.size.height
-                            ),
-                            cornerRadius = CornerRadius(32f, 32f)
-                        )
-                    }
-                },
+                .align(Alignment.CenterVertically),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Spacer(modifier = Modifier.width(5.dp))
@@ -141,6 +114,7 @@ fun SongCard(
                     tint = MaterialTheme.colors.secondaryVariant,
                     modifier = Modifier
                         .size(30.dp)
+                        .padding(end = 5.dp)
                         .align(Alignment.CenterEnd)
                         .clip(CircleShape)
                         .clickable {

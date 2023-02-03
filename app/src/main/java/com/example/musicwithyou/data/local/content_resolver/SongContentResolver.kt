@@ -4,12 +4,15 @@ import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.annotation.WorkerThread
 import com.example.musicwithyou.domain.models.Song
 import javax.inject.Inject
 
 class SongContentResolver @Inject constructor(
     private val application: Application,
 ) : ContentResolverHelper<Song> {
+
+    @WorkerThread
     override fun getData(): List<Song> {
 
         val songList = mutableListOf<Song>()
@@ -22,48 +25,70 @@ class SongContentResolver @Inject constructor(
             null
         )
 
-        while (cursor?.moveToNext() == true) {
-            val id = cursor.getLong(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID)
-            )
-            val title = cursor.getString(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
-            )
-            val year = cursor.getInt(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.YEAR)
-            )
-            val data = cursor.getString(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
-            )
-            val duration = cursor.getLong(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
-            )
-            val albumId = cursor.getLong(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID)
-            )
-            val albumName = cursor.getString(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-            )
-            val artistId = cursor.getLong(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST_ID)
-            )
-            val artistName = cursor.getString(
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-            )
-            val uri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId)
-            val song = Song(
-                id,
-                title,
-                uri.toString(),
-                data,
-                duration,
-                year,
-                albumId,
-                albumName,
-                artistId,
-                artistName
-            )
-            songList.add(song)
+        cursor?.use { crsr ->
+            val idColumn = crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID)
+            val titleColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
+
+            val yearColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.YEAR)
+
+            val dataColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
+
+            val durationColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
+
+            val albumIdColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID)
+
+            val albumNameColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
+
+            val artistIdColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST_ID)
+
+            val artistNameColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
+
+            crsr.apply {
+                if (count != 0) {
+                    while (crsr.moveToNext()) {
+                        val id = getLong(idColumn)
+                        val title = getString(titleColumn)
+                        val data = getString(dataColumn)
+                        val duration = getLong(durationColumn)
+                        val year = getInt(yearColumn)
+                        val albumId = getLong(albumIdColumn)
+                        val albumName = getString(albumNameColumn)
+                        val artistId = getLong(artistIdColumn)
+                        val artistName = getString(artistNameColumn)
+                        val songUri = ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            id
+                        )
+                        val imageUri = ContentUris.withAppendedId(
+                            Uri.parse("content://media/external/audio/albumart"),
+                            albumId
+                        )
+                        val song = Song(
+                            id,
+                            title,
+                            songUri.toString(),
+                            imageUri.toString(),
+                            data,
+                            duration,
+                            year,
+                            albumId,
+                            albumName,
+                            artistId,
+                            artistName
+                        )
+                        songList.add(song)
+                    }
+                }
+            }
+
         }
         cursor?.close()
         return songList

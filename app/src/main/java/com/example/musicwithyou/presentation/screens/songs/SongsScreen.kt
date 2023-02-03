@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
+import com.example.musicwithyou.presentation.MainViewModel
 import com.example.musicwithyou.presentation.components.SongCard
 import com.example.musicwithyou.presentation.screens.songs.components.SongActionsContent
 import com.example.musicwithyou.presentation.screens.songs.components.SongOrderSection
@@ -30,14 +31,16 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SongsScreen(
-    viewModel: SongsViewModel = hiltViewModel(),
     navController: NavController,
+    songsViewModel: SongsViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel,
 ) {
 
     //States
-    val songs = viewModel.state.songs
-    val songOrder = viewModel.state.songOrder
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = viewModel.state.isRefreshing)
+    val songs = songsViewModel.state.songs
+    val songOrder = songsViewModel.state.songOrder
+    val swipeRefreshState =
+        rememberSwipeRefreshState(isRefreshing = songsViewModel.state.isRefreshing)
 
 
     val bottomSheetState = rememberModalBottomSheetState(
@@ -106,7 +109,7 @@ fun SongsScreen(
                                     SongOrderSection(
                                         songOrder = songOrder,
                                         onOrderChange = { newOrder ->
-                                            viewModel.onEvent(SongsEvent.OrderChange(newOrder))
+                                            songsViewModel.onEvent(SongsEvent.OrderChange(newOrder))
                                             bottomSheetScope.launch {
                                                 bottomSheetState.hide()
                                             }
@@ -142,7 +145,7 @@ fun SongsScreen(
             SwipeRefresh(
                 state = swipeRefreshState,
                 onRefresh = {
-                    viewModel.onEvent(SongsEvent.RefreshSongs)
+                    songsViewModel.onEvent(SongsEvent.RefreshSongs)
                 }
             ) {
                 LazyColumn(
@@ -151,11 +154,13 @@ fun SongsScreen(
                     items(songs) { song ->
                         SongCard(
                             song = song,
-                            timePlayedSeconds = 0,
                             onSongClicked = {
-                                viewModel.onEvent(SongsEvent.PlaySong(it))
+                                mainViewModel.playSong(
+                                    currentSong = it,
+                                    songs
+                                )
                             },
-                            isSongPlaying = false,
+                            isSongPlaying = song == mainViewModel.currentPlayingSong.value,
                             onOptionsClicked = {
                                 bottomSheetScope.launch {
                                     customSheetContent = {
@@ -165,22 +170,14 @@ fun SongsScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
-                                                        viewModel.onEvent(
-                                                            SongsEvent.NextSongToPlay(
-                                                                song
-                                                            )
-                                                        )
+                                                        //Todo add song to queue as next song to play
                                                     },
                                                     iconId = R.drawable.play_next
                                                 ),
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
-                                                        viewModel.onEvent(
-                                                            SongsEvent.NextSongToPlay(
-                                                                song
-                                                            )
-                                                        )
+                                                        //Todo add song to the end of current queue
                                                     },
                                                     iconId = R.drawable.queue
                                                 ),
@@ -194,18 +191,14 @@ fun SongsScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.install_as_ringtone),
                                                     itemClicked = {
-                                                        viewModel.onEvent(
-                                                            SongsEvent.InstallSongAsRingtone(
-                                                                song
-                                                            )
-                                                        )
+                                                        //Todo install song as ringtone
                                                     },
                                                     iconId = R.drawable.bell
                                                 ),
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.delete_from_device),
                                                     itemClicked = {
-                                                        viewModel.onEvent(
+                                                        songsViewModel.onEvent(
                                                             SongsEvent.DeleteSong(
                                                                 song
                                                             )

@@ -32,8 +32,12 @@ fun BottomNavBar(
     items: List<NavigationItem>,
     navController: NavController,
     isVisible: Boolean,
-    isCurrentSongVisible: Boolean,
-    currentSong: Song? = null
+    currentSong: Song? = null,
+    isCurrentSongPlaying: Boolean = false,
+    onBottomBarPlayerClicked: () -> Unit,
+    onPlayOrPause: () -> Unit,
+    onSkipForward: () -> Unit,
+    onSkipBack: () -> Unit,
 ) {
 
     val navStackBackEntry by navController.currentBackStackEntryAsState()
@@ -41,28 +45,68 @@ fun BottomNavBar(
     val currentDestination = navStackBackEntry?.destination
 
     if (isVisible) {
-        BottomAppBar(
-            modifier = Modifier,
-            backgroundColor = MaterialTheme.colors.secondary,
-            contentPadding = AppBarDefaults.ContentPadding,
-            cutoutShape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp),
+        Column(
+            modifier = Modifier.background(MaterialTheme.colors.background)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+            AnimatedVisibility(
+                visible = currentSong != null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             ) {
-                items.forEach { item ->
-                    AddItem(
-                        item = item,
-                        currentDestination = currentDestination,
-                        navController = navController
-                    )
+                BottomBarPlayer(
+                    song = currentSong,
+                    isSongPlaying = isCurrentSongPlaying,
+                    onPlayOrPause = {
+                        onPlayOrPause()
+                    },
+                    onSkipForward = {
+                        onSkipForward()
+                    },
+                    onSkipBack = {
+                        onSkipBack()
+                    },
+                    modifier = Modifier
+                        .padding(start = 3.dp, end = 3.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .clip(RoundedCornerShape(topStart = 17.dp, topEnd = 17.dp))
+                        .background(MaterialTheme.colors.secondary)
+                        .clickable {
+                            onBottomBarPlayerClicked()
+                        }
+                        .padding(10.dp)
+                )
+            }
+            BottomAppBar(
+                modifier = Modifier
+                    .wrapContentHeight(unbounded = true)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
+                contentPadding = AppBarDefaults.ContentPadding,
+                backgroundColor = MaterialTheme.colors.background,
+                elevation = 10.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    items.forEach { item ->
+                        AddItem(
+                            item = item,
+                            currentDestination = currentDestination,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun RowScope.AddItem(
@@ -72,16 +116,14 @@ fun RowScope.AddItem(
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
 
-    val background = if (selected) MaterialTheme.colors.secondary else Color.Transparent
-
-    val contentColor = if (selected) MaterialTheme.colors.primary
+    val contentColor = if (selected) MaterialTheme.colors.secondary
     else MaterialTheme.colors.secondaryVariant
 
     Box(
         modifier = Modifier
             .wrapContentHeight()
             .clip(CircleShape)
-            .background(background)
+            .background(Color.Transparent)
             .clickable(onClick = {
                 navController.navigate(item.route) {
                     popUpTo(navController.graph.findStartDestination().id) {

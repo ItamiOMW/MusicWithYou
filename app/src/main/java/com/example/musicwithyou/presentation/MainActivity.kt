@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.AppNavigation
@@ -44,9 +44,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: MainViewModel by viewModels()
-
 
     @OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class,)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +77,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     if (permissionsState.status.isGranted) {
+
+                        val mainViewModel = viewModel(
+                            modelClass = MainViewModel::class.java
+                        )
+
                         val systemUiController = rememberSystemUiController()
 
                         if (isSystemInDarkTheme()) {
@@ -117,7 +119,7 @@ class MainActivity : ComponentActivity() {
 
                         val scaffoldState = rememberScaffoldState()
 
-                        val scope = rememberCoroutineScope()
+                        val drawerScope = rememberCoroutineScope()
 
                         Scaffold(
                             scaffoldState = scaffoldState,
@@ -142,14 +144,32 @@ class MainActivity : ComponentActivity() {
                                     ),
                                     navController = navController,
                                     isVisible = bottomBarIsVisible,
-                                    isCurrentSongVisible = false //Todo handle current song state
+                                    currentSong = mainViewModel.currentPlayingSong.value,
+                                    isCurrentSongPlaying = mainViewModel.isSongPlaying.value,
+                                    onBottomBarPlayerClicked = {
+                                        //Todo navigate to CurrentMusicDetail
+                                    },
+                                    onPlayOrPause = {
+                                        mainViewModel.currentPlayingSong.value?.let {
+                                            mainViewModel.playSong(
+                                                it,
+                                                mainViewModel.songList
+                                            )
+                                        }
+                                    },
+                                    onSkipForward = {
+                                        mainViewModel.skipToNext()
+                                    },
+                                    onSkipBack = {
+                                        mainViewModel.skipToPrevious()
+                                    }
                                 )
                             },
                             topBar = {
                                 TopBar(
                                     isVisible = topBarIsVisible,
                                     onNavigationIconClicked = {
-                                        scope.launch {
+                                        drawerScope.launch {
                                             scaffoldState.drawerState.open()
                                         }
                                     },
@@ -179,7 +199,7 @@ class MainActivity : ComponentActivity() {
                                     ),
                                     onItemClick = { item ->
                                         //Todo navigate to item route
-                                        scope.launch {
+                                        drawerScope.launch {
                                             scaffoldState.drawerState.close()
                                         }
                                     }
@@ -187,9 +207,11 @@ class MainActivity : ComponentActivity() {
                             },
                         ) {
                             Box(modifier = Modifier.padding(it)) {
-                                AppNavigation(navController = navController)
+                                AppNavigation(
+                                    navController = navController,
+                                    mainViewModel = mainViewModel
+                                )
                             }
-
                         }
                     } else {
                         Box(

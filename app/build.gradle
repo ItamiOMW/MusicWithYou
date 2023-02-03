@@ -96,9 +96,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:$datastore_version")
 
     //Exo Player
-    api "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
-    api "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
-    api "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
+    implementation "androidx.media:media:$media_version"
+    implementation "com.google.android.exoplayer:exoplayer:$exo_player_version"
+    implementation "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
+
 
     //Glide
     implementation "com.github.bumptech.glide:compose:$glide_compose_version"

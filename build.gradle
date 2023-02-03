@@ -18,6 +18,7 @@ buildscript {
         swipe_refresh_version = '0.24.2-alpha'
         datastore_version = '1.0.0'
         exo_player_version = '2.18.2'
+        media_version = '1.6.0'
         accompanist_animation_version = '0.27.0'
         accompanist_permissions_version = '0.28.0'
         accompanist_systemui_controller_version = '0.27.0'
