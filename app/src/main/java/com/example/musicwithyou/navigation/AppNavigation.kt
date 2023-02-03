@@ -3,6 +3,7 @@ package com.example.musicwithyou.navigation
 import androidx.compose.animation.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.example.musicwithyou.presentation.MainViewModel
 import com.example.musicwithyou.presentation.screens.albums.AlbumsScreen
 import com.example.musicwithyou.presentation.screens.current_song.CurrentSongScreen
 import com.example.musicwithyou.presentation.screens.playlists.PlaylistsScreen
@@ -14,7 +15,8 @@ import com.google.accompanist.navigation.animation.composable
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigation(
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
     AnimatedNavHost(
         navController = navController,
@@ -23,7 +25,7 @@ fun AppNavigation(
         composable(
             Screen.SongsScreen.route
         ) {
-            SongsScreen(navController = navController)
+            SongsScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
             Screen.PlaylistsScreen.route
