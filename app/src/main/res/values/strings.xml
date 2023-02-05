@@ -32,7 +32,7 @@
     <string name="okay">Ok</string>
     <string name="duration">Duration</string>
     <string name="album">Album</string>
-    <string name="artist">Artist</string>
+    <string name="artists">Artists</string>
     <string name="song_title">Song title</string>
     <string name="notification_channel">Now Playing</string>
     <string name="notification_channel_description">Shows what music is currently playing in our App</string>
@@ -45,4 +45,5 @@
     <string name="skip_back_desc">Skip back</string>
     <string name="skip_forward_desc">Skip forward</string>
     <string name="play_or_stop_desc">Play or Stop</string>
+    <string name="tab_icon_desc">Tab icon</string>
 </resources>

@@ -4,10 +4,8 @@ import androidx.compose.animation.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.example.musicwithyou.presentation.MainViewModel
-import com.example.musicwithyou.presentation.screens.albums.AlbumsScreen
-import com.example.musicwithyou.presentation.screens.current_song.CurrentSongScreen
-import com.example.musicwithyou.presentation.screens.playlists.PlaylistsScreen
-import com.example.musicwithyou.presentation.screens.songs.SongsScreen
+import com.example.musicwithyou.presentation.screens.main_tabs.MainTabsScreen
+import com.example.musicwithyou.presentation.screens.playing_now.PlayingNowScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 
@@ -16,31 +14,21 @@ import com.google.accompanist.navigation.animation.composable
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
 ) {
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screen.SongsScreen.route
+        startDestination = Screen.MainTabsScreen.route
     ) {
         composable(
-            Screen.SongsScreen.route
+            Screen.MainTabsScreen.route
         ) {
-            SongsScreen(navController = navController, mainViewModel = mainViewModel)
+            MainTabsScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            Screen.PlaylistsScreen.route
+            Screen.PlayingNowScreen.route
         ) {
-            PlaylistsScreen(navController = navController)
-        }
-        composable(
-            Screen.AlbumsScreen.route
-        ) {
-            AlbumsScreen(navController = navController)
-        }
-        composable(
-            Screen.CurrentSongScreen.route,
-        ) {
-            CurrentSongScreen(navController = navController)
+            PlayingNowScreen(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }

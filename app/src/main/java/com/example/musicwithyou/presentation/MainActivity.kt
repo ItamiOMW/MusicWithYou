@@ -7,33 +7,29 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.AppNavigation
-import com.example.musicwithyou.navigation.Screen
-import com.example.musicwithyou.presentation.components.BottomNavBar
+import com.example.musicwithyou.presentation.components.BottomBarPlayer
 import com.example.musicwithyou.presentation.components.Drawer
 import com.example.musicwithyou.presentation.components.TopBar
-import com.example.musicwithyou.presentation.ui.theme.DarkBlue
 import com.example.musicwithyou.presentation.ui.theme.MusicWithYouTheme
-import com.example.musicwithyou.presentation.ui.theme.White
-import com.example.musicwithyou.presentation.utils.NavigationItem
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -45,7 +41,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class,)
+    @OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -82,40 +78,13 @@ class MainActivity : ComponentActivity() {
                             modelClass = MainViewModel::class.java
                         )
 
-                        val systemUiController = rememberSystemUiController()
-
-                        if (isSystemInDarkTheme()) {
-                            systemUiController.setStatusBarColor(DarkBlue)
-                        } else {
-                            systemUiController.setStatusBarColor(White)
+                        val systemUiController = rememberSystemUiController().apply {
+                            setSystemBarsColor(MaterialTheme.colors.primary)
                         }
 
                         val navController = rememberAnimatedNavController()
 
-                        var bottomBarIsVisible by rememberSaveable { (mutableStateOf(true)) }
-
                         var topBarIsVisible by rememberSaveable { (mutableStateOf(true)) }
-
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-                        when (navBackStackEntry?.destination?.route) {
-                            Screen.SongsScreen.route -> {
-                                bottomBarIsVisible = true
-                                topBarIsVisible = true
-                            }
-                            Screen.PlaylistsScreen.route -> {
-                                bottomBarIsVisible = true
-                                topBarIsVisible = true
-                            }
-                            Screen.AlbumsScreen.route -> {
-                                bottomBarIsVisible = true
-                                topBarIsVisible = true
-                            }
-                            else -> {
-                                bottomBarIsVisible = false
-                                topBarIsVisible = false
-                            }
-                        }
 
                         val scaffoldState = rememberScaffoldState()
 
@@ -124,46 +93,45 @@ class MainActivity : ComponentActivity() {
                         Scaffold(
                             scaffoldState = scaffoldState,
                             bottomBar = {
-                                BottomNavBar(
-                                    items = listOf(
-                                        NavigationItem(
-                                            stringResource(id = R.string.songs),
-                                            Screen.SongsScreen.route,
-                                            R.drawable.music
-                                        ),
-                                        NavigationItem(
-                                            stringResource(R.string.playlists),
-                                            Screen.PlaylistsScreen.route,
-                                            R.drawable.playlist
-                                        ),
-                                        NavigationItem(
-                                            stringResource(R.string.albums),
-                                            Screen.AlbumsScreen.route,
-                                            R.drawable.album
-                                        )
-                                    ),
-                                    navController = navController,
-                                    isVisible = bottomBarIsVisible,
-                                    currentSong = mainViewModel.currentPlayingSong.value,
-                                    isCurrentSongPlaying = mainViewModel.isSongPlaying.value,
-                                    onBottomBarPlayerClicked = {
-                                        //Todo navigate to CurrentMusicDetail
-                                    },
-                                    onPlayOrPause = {
-                                        mainViewModel.currentPlayingSong.value?.let {
-                                            mainViewModel.playSong(
-                                                it,
-                                                mainViewModel.songList
+                                AnimatedVisibility(
+                                    visible = mainViewModel.currentPlayingSong.value != null,
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                ) {
+                                    BottomBarPlayer(
+                                        song = mainViewModel.currentPlayingSong.value,
+                                        isSongPlaying = mainViewModel.isSongPlaying.value,
+                                        onPlayOrPause = {
+                                            mainViewModel.currentPlayingSong.value?.let {
+                                                mainViewModel.playSong(
+                                                    it,
+                                                    mainViewModel.songList
+                                                )
+                                            }
+                                        },
+                                        onSkipForward = {
+                                            mainViewModel.skipToNext()
+                                        },
+                                        onSkipBack = {
+                                            mainViewModel.skipToPrevious()
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .background(MaterialTheme.colors.secondary)
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 17.dp,
+                                                    topEnd = 17.dp
+                                                )
                                             )
-                                        }
-                                    },
-                                    onSkipForward = {
-                                        mainViewModel.skipToNext()
-                                    },
-                                    onSkipBack = {
-                                        mainViewModel.skipToPrevious()
-                                    }
-                                )
+                                            .clickable {
+                                                //Todo launch current playing screen
+                                            }
+                                            .padding(10.dp)
+                                    )
+                                }
                             },
                             topBar = {
                                 TopBar(
@@ -181,21 +149,7 @@ class MainActivity : ComponentActivity() {
                             drawerContent = {
                                 Drawer(
                                     items = listOf(
-                                        NavigationItem(
-                                            stringResource(id = R.string.songs),
-                                            Screen.SongsScreen.route,
-                                            R.drawable.music
-                                        ),
-                                        NavigationItem(
-                                            stringResource(R.string.playlists),
-                                            Screen.PlaylistsScreen.route,
-                                            R.drawable.playlist
-                                        ),
-                                        NavigationItem(
-                                            stringResource(R.string.albums),
-                                            Screen.AlbumsScreen.route,
-                                            R.drawable.album
-                                        )
+                                        //Todo add item for future sections( settings and so on )
                                     ),
                                     onItemClick = { item ->
                                         //Todo navigate to item route
@@ -206,12 +160,15 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ) {
-                            Box(modifier = Modifier.padding(it)) {
-                                AppNavigation(
-                                    navController = navController,
-                                    mainViewModel = mainViewModel
-                                )
+                            Column() {
+                                Box(modifier = Modifier.padding(it)) {
+                                    AppNavigation(
+                                        navController = navController,
+                                        mainViewModel = mainViewModel
+                                    )
+                                }
                             }
+
                         }
                     } else {
                         Box(

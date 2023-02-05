@@ -69,11 +69,21 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$compose_material_icons_version"
     implementation("androidx.navigation:navigation-compose:$compose_nav_version")
 
-    //Accompanist dependencies
+    //Navigation animations
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_animation_version"
+
+    //Request permissions
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_permissions_version"
+
+    //Control system ui
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_systemui_controller_version"
+
+    //Swipe Refresh
     implementation "com.google.accompanist:accompanist-swiperefresh:$swipe_refresh_version"
+
+    //ViewPager
+    implementation "com.google.accompanist:accompanist-pager:$viewpager_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$viewpager_version"
 
     //Dagger-Hilt
     implementation "com.google.dagger:hilt-android:$dagger_hilt_version"
@@ -99,7 +109,6 @@ dependencies {
     implementation "androidx.media:media:$media_version"
     implementation "com.google.android.exoplayer:exoplayer:$exo_player_version"
     implementation "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
-
 
     //Glide
     implementation "com.github.bumptech.glide:compose:$glide_compose_version"
