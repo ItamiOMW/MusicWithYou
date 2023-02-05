@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.songs
+package com.example.musicwithyou.presentation.screens.main_tabs.songs
 
 import com.example.musicwithyou.domain.models.PlayList
 import com.example.musicwithyou.domain.models.Song

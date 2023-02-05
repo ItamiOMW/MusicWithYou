@@ -23,6 +23,7 @@ buildscript {
         accompanist_permissions_version = '0.28.0'
         accompanist_systemui_controller_version = '0.27.0'
         glide_compose_version = '1.0.0-alpha.1'
+        viewpager_version = '0.23.1'
     }
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$dagger_hilt_version"

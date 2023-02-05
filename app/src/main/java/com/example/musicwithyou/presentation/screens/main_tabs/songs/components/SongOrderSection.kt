@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.songs.components
+package com.example.musicwithyou.presentation.screens.main_tabs.songs.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -46,7 +46,7 @@ fun SongOrderSection(
                 horizontalArrangement = Arrangement.SpaceBetween
             )
             DefaultRadioButton(
-                text = stringResource(R.string.artist),
+                text = stringResource(R.string.artists),
                 selected = currentSongOrder is SongOrder.Artist,
                 onSelect = {
                     currentSongOrder = SongOrder.Artist(songOrder.orderType)

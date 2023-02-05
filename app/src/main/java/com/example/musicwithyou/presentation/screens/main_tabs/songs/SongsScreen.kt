@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.songs
+package com.example.musicwithyou.presentation.screens.main_tabs.songs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,13 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.MainViewModel
 import com.example.musicwithyou.presentation.components.SongCard
-import com.example.musicwithyou.presentation.screens.songs.components.SongActionsContent
-import com.example.musicwithyou.presentation.screens.songs.components.SongOrderSection
+import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongActionsContent
+import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSection
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -32,7 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SongsScreen(
     navController: NavController,
-    songsViewModel: SongsViewModel = hiltViewModel(),
+    songsViewModel: SongsViewModel,
     mainViewModel: MainViewModel,
 ) {
 

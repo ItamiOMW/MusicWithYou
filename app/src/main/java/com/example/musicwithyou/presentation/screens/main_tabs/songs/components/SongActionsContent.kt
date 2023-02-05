@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.songs.components
+package com.example.musicwithyou.presentation.screens.main_tabs.songs.components
 
 
 import androidx.compose.foundation.clickable

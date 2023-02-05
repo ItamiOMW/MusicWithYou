@@ -35,7 +35,7 @@ fun BottomBarPlayer(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.align(Alignment.CenterVertically).weight(1f)
+            modifier = Modifier.align(Alignment.CenterVertically).weight(1f).padding(end = 5.dp)
         ) {
             Text(
                 text = song?.title ?: EMPTY_STRING,
@@ -54,7 +54,7 @@ fun BottomBarPlayer(
         }
         Row(
             modifier = Modifier.align(Alignment.CenterVertically).wrapContentWidth(),
-            horizontalArrangement = Arrangement.spacedBy(13.dp),
+            horizontalArrangement = Arrangement.spacedBy(15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -81,7 +81,7 @@ fun BottomBarPlayer(
             )
             Box(
                 modifier = Modifier
-                    .size(35.dp)
+                    .size(40.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colors.primary)
                     .clickable {

@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.songs
+package com.example.musicwithyou.presentation.screens.main_tabs.songs
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
