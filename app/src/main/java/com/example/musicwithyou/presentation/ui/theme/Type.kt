@@ -30,6 +30,16 @@ val CustomTypography = Typography(
         fontSize = 60.sp,
         letterSpacing = (-0.5).sp
     ),
+    h3 = TextStyle(
+        fontWeight = FontWeight.Black,
+        fontSize = 40.sp,
+        letterSpacing = (-0.5).sp
+    ),
+    h4 = TextStyle(
+        fontWeight = FontWeight.Black,
+        fontSize = 30.sp,
+        letterSpacing = (-0.5).sp
+    ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Black,
         fontSize = 20.sp,

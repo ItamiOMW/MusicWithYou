@@ -24,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.AppNavigation
+import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.BottomBarPlayer
 import com.example.musicwithyou.presentation.components.Drawer
 import com.example.musicwithyou.presentation.components.TopBar
@@ -86,51 +89,83 @@ class MainActivity : ComponentActivity() {
 
                         var topBarIsVisible by rememberSaveable { (mutableStateOf(true)) }
 
+                        var bottomBarIsVisible by rememberSaveable { (mutableStateOf(true)) }
+
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+
                         val scaffoldState = rememberScaffoldState()
 
                         val drawerScope = rememberCoroutineScope()
 
+                        when (navBackStackEntry?.destination?.route) {
+                            Screen.PlayingNowScreen.route -> {
+                                bottomBarIsVisible = false
+                                topBarIsVisible = false
+                            }
+                            Screen.CurrentQueueScreen.route -> {
+                                bottomBarIsVisible = false
+                                topBarIsVisible = false
+                            }
+                            else -> {
+                                bottomBarIsVisible = true
+                                topBarIsVisible = true
+                            }
+                        }
+
                         Scaffold(
                             scaffoldState = scaffoldState,
                             bottomBar = {
-                                AnimatedVisibility(
-                                    visible = mainViewModel.currentPlayingSong.value != null,
-                                    modifier = Modifier
-                                        .wrapContentHeight()
-                                        .fillMaxWidth()
-                                ) {
-                                    BottomBarPlayer(
-                                        song = mainViewModel.currentPlayingSong.value,
-                                        isSongPlaying = mainViewModel.isSongPlaying.value,
-                                        onPlayOrPause = {
-                                            mainViewModel.currentPlayingSong.value?.let {
-                                                mainViewModel.playSong(
-                                                    it,
-                                                    mainViewModel.songList
-                                                )
-                                            }
-                                        },
-                                        onSkipForward = {
-                                            mainViewModel.skipToNext()
-                                        },
-                                        onSkipBack = {
-                                            mainViewModel.skipToPrevious()
-                                        },
+                                if (bottomBarIsVisible) {
+                                    AnimatedVisibility(
+                                        visible = mainViewModel.currentPlayingSong.value != null,
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .wrapContentHeight()
-                                            .background(MaterialTheme.colors.secondary)
-                                            .clip(
-                                                RoundedCornerShape(
-                                                    topStart = 17.dp,
-                                                    topEnd = 17.dp
+                                            .fillMaxWidth()
+                                    ) {
+                                        BottomBarPlayer(
+                                            song = mainViewModel.currentPlayingSong.value,
+                                            isSongPlaying = mainViewModel.isSongPlaying.value,
+                                            onPlayOrPause = {
+                                                mainViewModel.currentPlayingSong.value?.let {
+                                                    mainViewModel.playSong(
+                                                        it,
+                                                        mainViewModel.songList
+                                                    )
+                                                }
+                                            },
+                                            onSkipForward = {
+                                                mainViewModel.skipToNext()
+                                            },
+                                            onSkipBack = {
+                                                mainViewModel.skipToPrevious()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .background(MaterialTheme.colors.secondary)
+                                                .clip(
+                                                    RoundedCornerShape(
+                                                        topStart = 17.dp,
+                                                        topEnd = 17.dp
+                                                    )
                                                 )
-                                            )
-                                            .clickable {
-                                                //Todo launch current playing screen
-                                            }
-                                            .padding(10.dp)
-                                    )
+                                                .clickable {
+                                                    navController.navigate(
+                                                        route = Screen.PlayingNowScreen.route,
+                                                    ) {
+                                                        popUpTo(
+                                                            id = navBackStackEntry?.destination?.id
+                                                                ?: navController.graph.findStartDestination().id
+                                                        ) {
+                                                            saveState = true
+                                                        }
+                                                        launchSingleTop = true
+                                                        restoreState = true
+                                                    }
+                                                }
+                                                .padding(10.dp)
+                                        )
+                                    }
                                 }
                             },
                             topBar = {

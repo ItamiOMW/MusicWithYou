@@ -96,7 +96,7 @@ fun BottomBarPlayer(
                     modifier = Modifier
                         .padding(5.dp)
                         .align(Alignment.Center)
-                        .fillMaxSize()
+                        .fillMaxSize(0.5f)
                 )
             }
         }

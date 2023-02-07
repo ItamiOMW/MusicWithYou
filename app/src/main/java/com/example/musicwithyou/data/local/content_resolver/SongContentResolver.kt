@@ -67,9 +67,9 @@ class SongContentResolver @Inject constructor(
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             id
                         )
-                        val imageUri = ContentUris.withAppendedId(
+                        val imageUri = Uri.withAppendedPath(
                             Uri.parse("content://media/external/audio/albumart"),
-                            albumId
+                            albumId.toString()
                         )
                         val song = Song(
                             id,

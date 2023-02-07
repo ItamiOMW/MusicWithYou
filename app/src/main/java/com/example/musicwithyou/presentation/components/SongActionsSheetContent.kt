@@ -20,7 +20,7 @@ import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.presentation.utils.ActionItem
 
 @Composable
-fun SongActionsContent(
+fun SongActionsSheetContent(
     song: Song,
     items: List<ActionItem>,
 ) {

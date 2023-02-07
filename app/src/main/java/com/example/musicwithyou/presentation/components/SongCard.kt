@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,14 +17,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.utils.timestampToDuration
 
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SongCard(
     song: Song,
@@ -54,13 +52,12 @@ fun SongCard(
                 .clip(RoundedCornerShape(10.dp))
                 .align(Alignment.CenterVertically)
         ) {
-            GlideImage(
+            AsyncImage(
                 model = song.imageUri,
                 contentDescription = stringResource(id = R.string.song_image_desc),
-                modifier = Modifier.size(50.dp)
-            ) {
-                it.error(R.drawable.unknown_song)
-            }
+                modifier = Modifier.size(50.dp),
+                error = painterResource(id = R.drawable.unknown_song)
+            )
             if (isSongPlaying) {
                 //Todo add animation of audio visualization
             }

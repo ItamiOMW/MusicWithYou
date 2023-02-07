@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.main_tabs.artists
+package com.example.musicwithyou.presentation.screens.main_tabs.albums
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -6,10 +6,10 @@ import com.example.musicwithyou.presentation.MainViewModel
 
 
 @Composable
-fun ArtistsScreen(
+fun AlbumsPagerScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    artistsViewModel: ArtistsViewModel,
+    albumsViewModel: AlbumsViewModel,
 ) {
 
 }

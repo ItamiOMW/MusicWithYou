@@ -1,11 +1,15 @@
-package com.example.musicwithyou.presentation.screens.playing_now
+package com.example.musicwithyou.presentation.screens.current_song
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+
 @HiltViewModel
 class PlayingNowViewModel @Inject constructor(
 
-): ViewModel() {
+) : ViewModel() {
+
+    //Todo implement playlists repository before implementing this viewModel
+
 }

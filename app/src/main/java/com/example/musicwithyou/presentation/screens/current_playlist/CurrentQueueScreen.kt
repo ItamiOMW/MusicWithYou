@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.main_tabs.albums
+package com.example.musicwithyou.presentation.screens.current_playlist
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -6,10 +6,9 @@ import com.example.musicwithyou.presentation.MainViewModel
 
 
 @Composable
-fun AlbumsScreen(
+fun CurrentQueueScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    albumsViewModel: AlbumsViewModel,
 ) {
 
 }

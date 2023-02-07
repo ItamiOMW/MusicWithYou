@@ -1,16 +1,15 @@
-package com.example.musicwithyou.presentation.screens.playing_now
+package com.example.musicwithyou.presentation.screens.main_tabs.playlists
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.presentation.MainViewModel
 
 
 @Composable
-fun PlayingNowScreen(
+fun PlaylistsPagerScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    playingNowViewModel: PlayingNowViewModel = hiltViewModel(),
+    playlistsViewModel: PlaylistsViewModel,
 ) {
 
 }

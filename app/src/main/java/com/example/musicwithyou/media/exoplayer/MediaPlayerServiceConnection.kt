@@ -43,16 +43,15 @@ class MediaPlayerServiceConnection @Inject constructor(
     val transportControl: MediaControllerCompat.TransportControls
         get() = mediaControllerCompat.transportControls
 
-
     var repeatMode = mutableStateOf(PlaybackStateCompat.REPEAT_MODE_NONE)
         private set
 
     var shuffleMode = mutableStateOf(PlaybackStateCompat.SHUFFLE_MODE_NONE)
         private set
 
-    private var songList = mutableListOf<Song>()
+    private lateinit var mediaControllerCompat: MediaControllerCompat
 
-    lateinit var mediaControllerCompat: MediaControllerCompat
+    private var songList = mutableListOf<Song>()
 
     private val mediaBrowserServiceCallback = MediaBrowserConnectionCallback(context)
 
@@ -98,22 +97,15 @@ class MediaPlayerServiceConnection @Inject constructor(
             PlaybackStateCompat.SHUFFLE_MODE_NONE -> PlaybackStateCompat.SHUFFLE_MODE_ALL
             else -> PlaybackStateCompat.SHUFFLE_MODE_NONE
         }
+        transportControl.setShuffleMode(shuffleMode.value)
     }
 
     fun skipToNext() {
-        if (currentPlayingSong.value?.id == songList.last().id) {
-            transportControl.skipToQueueItem(songList.first().id)
-        } else {
-            transportControl.skipToNext()
-        }
+        transportControl.skipToNext()
     }
 
     fun skipToPrevious() {
-        if (currentPlayingSong.value?.id == songList.first().id) {
-            transportControl.skipToQueueItem(songList.last().id)
-        } else {
-            transportControl.skipToPrevious()
-        }
+        transportControl.skipToPrevious()
     }
 
     fun subscribe(

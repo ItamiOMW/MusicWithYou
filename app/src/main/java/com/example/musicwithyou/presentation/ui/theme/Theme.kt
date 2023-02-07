@@ -19,7 +19,7 @@ val DarkColorScheme = darkColors(
     onBackground = White,
     surface = LightGray,
     onSurface = White,
-    primaryVariant = DarkBlue
+//    primaryVariant = DarkBlue
 )
 
 val LightColorScheme = lightColors(
@@ -34,7 +34,7 @@ val LightColorScheme = lightColors(
     onBackground = DarkBlue,
     surface = LightGray,
     onSurface = DarkBlue,
-    primaryVariant = White
+//    primaryVariant = White
 )
 
 @Composable
