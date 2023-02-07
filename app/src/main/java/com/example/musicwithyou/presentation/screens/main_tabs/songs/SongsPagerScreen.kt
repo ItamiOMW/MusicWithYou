@@ -18,8 +18,8 @@ import androidx.navigation.NavController
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.MainViewModel
 import com.example.musicwithyou.presentation.components.SongCard
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongActionsContent
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSection
+import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongActionsSheetContent
+import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSectionSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SongsScreen(
+fun SongsPagerScreen(
     navController: NavController,
     songsViewModel: SongsViewModel,
     mainViewModel: MainViewModel,
@@ -38,8 +38,9 @@ fun SongsScreen(
     //States
     val songs = songsViewModel.state.songs
     val songOrder = songsViewModel.state.songOrder
-    val swipeRefreshState =
-        rememberSwipeRefreshState(isRefreshing = songsViewModel.state.isRefreshing)
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = songsViewModel.state.isRefreshing
+    )
 
 
     val bottomSheetState = rememberModalBottomSheetState(
@@ -73,7 +74,7 @@ fun SongsScreen(
                     modifier = Modifier
                         .clip(RoundedCornerShape(15.dp))
                         .clickable {
-                            //Todo shuffle songs
+                            mainViewModel.playShuffled(songs)
                         }
                 ) {
                     Icon(
@@ -105,7 +106,7 @@ fun SongsScreen(
                             .align(Alignment.CenterVertically)
                             .clickable {
                                 customSheetContent = {
-                                    SongOrderSection(
+                                    SongOrderSectionSheetContent(
                                         songOrder = songOrder,
                                         onOrderChange = { newOrder ->
                                             songsViewModel.onEvent(SongsEvent.OrderChange(newOrder))
@@ -163,7 +164,7 @@ fun SongsScreen(
                             onOptionsClicked = {
                                 bottomSheetScope.launch {
                                     customSheetContent = {
-                                        SongActionsContent(
+                                        SongActionsSheetContent(
                                             song = song,
                                             items = listOf(
                                                 ActionItem(

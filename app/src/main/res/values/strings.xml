@@ -46,4 +46,9 @@
     <string name="skip_forward_desc">Skip forward</string>
     <string name="play_or_stop_desc">Play or Stop</string>
     <string name="tab_icon_desc">Tab icon</string>
+    <string name="now_playing_title">Now Playing</string>
+    <string name="queue_title">Queue</string>
+    <string name="close_current_playing_desc">Close Current Playing Song screen</string>
+    <string name="queue_songs_desc">Queue of current playing songs</string>
+    <string name="shuffle_mode_desc">Shuffle mode</string>
 </resources>

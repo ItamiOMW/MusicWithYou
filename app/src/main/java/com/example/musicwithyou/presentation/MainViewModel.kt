@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicwithyou.domain.models.Song
-import com.example.musicwithyou.domain.usecase.song_usecase.GetSongsUseCase
 import com.example.musicwithyou.media.exoplayer.MediaPlayerServiceConnection
 import com.example.musicwithyou.media.service.MediaPlayerService
 import com.example.musicwithyou.media.utils.MEDIA_ROOT_ID
@@ -21,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getSongsUseCase: GetSongsUseCase,
     serviceConnection: MediaPlayerServiceConnection,
 ) : ViewModel() {
 
@@ -67,10 +65,8 @@ class MainViewModel @Inject constructor(
         updatePlayback()
     }
 
-
     init {
         viewModelScope.launch {
-            songList = getSongs()
             isConnected.collect {
                 if (it) {
                     rootMediaId = serviceConnection.rootMediaId
@@ -84,8 +80,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun playSong(currentSong: Song, currentSongList: List<Song>) {
-        songList = currentSongList
-        serviceConnection.playAudio(songList)
         if (currentSong.id == currentPlayingSong.value?.id) {
             if (isSongPlaying.value) {
                 serviceConnection.transportControl.pause()
@@ -93,17 +87,23 @@ class MainViewModel @Inject constructor(
                 serviceConnection.transportControl.play()
             }
         } else {
+            songList = currentSongList
+            serviceConnection.playAudio(songList)
             serviceConnection.transportControl.playFromMediaId(currentSong.id.toString(), null)
         }
     }
 
+    fun playShuffled(currentSongList: List<Song>) {
+        songList = currentSongList.shuffled()
+        serviceConnection.playAudio(songList)
+        serviceConnection.transportControl.playFromMediaId(songList.first().id.toString(), null)
+    }
 
-
-    fun shuffle() {
+    fun shuffleMode() {
         serviceConnection.shuffle()
     }
 
-    fun repeat() {
+    fun repeatMode() {
         serviceConnection.repeat()
     }
 
@@ -131,10 +131,13 @@ class MainViewModel @Inject constructor(
         serviceConnection.transportControl.seekTo(
             (currentDuration * value / 100f).toLong()
         )
+        updatePosition = false
+        updatePlayback()
+        updatePosition = true
     }
 
     private fun updatePlayback() {
-        viewModelScope.launch {
+        viewModelScope.launch() {
             val position = playbackState.value?.currentPosition ?: 0
 
             if (currentPlaybackPosition != position) {
@@ -143,19 +146,14 @@ class MainViewModel @Inject constructor(
 
             if (currentDuration > 0) {
                 currentSongProgress.value = (
-                        currentPlaybackPosition.toFloat() / currentDuration.toFloat())
+                        currentPlaybackPosition.toFloat() / currentDuration.toFloat() * 100f)
             }
-
             delay(PLAYBACK_UPDATE_INTERVAL)
 
             if (updatePosition) {
                 updatePlayback()
             }
         }
-    }
-
-    private suspend fun getSongs(): List<Song> {
-        return getSongsUseCase()
     }
 
     override fun onCleared() {

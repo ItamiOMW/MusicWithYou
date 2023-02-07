@@ -110,7 +110,8 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer:$exo_player_version"
     implementation "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
 
-    //Glide
-    implementation "com.github.bumptech.glide:compose:$glide_compose_version"
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:$coil_compose_version")
 
 }

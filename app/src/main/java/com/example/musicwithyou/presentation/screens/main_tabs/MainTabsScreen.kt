@@ -12,13 +12,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.MainViewModel
-import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsScreen
+import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsViewModel
-import com.example.musicwithyou.presentation.screens.main_tabs.artists.ArtistsScreen
+import com.example.musicwithyou.presentation.screens.main_tabs.artists.ArtistsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.artists.ArtistsViewModel
-import com.example.musicwithyou.presentation.screens.main_tabs.playlists.PlaylistsScreen
+import com.example.musicwithyou.presentation.screens.main_tabs.playlists.PlaylistsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.playlists.PlaylistsViewModel
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.SongsScreen
+import com.example.musicwithyou.presentation.screens.main_tabs.songs.SongsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.songs.SongsViewModel
 import com.example.musicwithyou.presentation.utils.TabItem
 import com.google.accompanist.pager.*
@@ -42,7 +42,7 @@ fun MainTabsScreen(
             title = stringResource(id = R.string.songs),
             iconId = R.drawable.music,
             screen = {
-                SongsScreen(
+                SongsPagerScreen(
                     navController = navController,
                     mainViewModel = mainViewModel,
                     songsViewModel = songsViewModel
@@ -53,7 +53,7 @@ fun MainTabsScreen(
             title = stringResource(id = R.string.playlists),
             iconId = R.drawable.playlist,
             screen = {
-                PlaylistsScreen(
+                PlaylistsPagerScreen(
                     navController = navController,
                     mainViewModel = mainViewModel,
                     playlistsViewModel = playlistsViewModel
@@ -64,7 +64,7 @@ fun MainTabsScreen(
             title = stringResource(id = R.string.albums),
             iconId = R.drawable.album,
             screen = {
-                AlbumsScreen(
+                AlbumsPagerScreen(
                     navController = navController,
                     mainViewModel = mainViewModel,
                     albumsViewModel = albumsViewModel
@@ -75,7 +75,7 @@ fun MainTabsScreen(
             title = stringResource(id = R.string.artists),
             iconId = R.drawable.artist,
             screen = {
-                ArtistsScreen(
+                ArtistsPagerScreen(
                     navController = navController,
                     mainViewModel = mainViewModel,
                     artistsViewModel = artistsViewModel

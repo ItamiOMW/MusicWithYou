@@ -13,7 +13,7 @@ import com.example.musicwithyou.presentation.components.DefaultRadioButton
 
 
 @Composable
-fun SongOrderSection(
+fun SongOrderSectionSheetContent(
     modifier: Modifier = Modifier,
     songOrder: SongOrder,
     onOrderChange: (SongOrder) -> Unit,
