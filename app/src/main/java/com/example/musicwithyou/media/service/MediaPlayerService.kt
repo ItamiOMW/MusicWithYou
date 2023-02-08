@@ -106,6 +106,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         mediaPlayerNotificationManager.showNotification(exoPlayer)
 
+
     }
 
     override fun onDestroy() {

@@ -70,7 +70,6 @@ class MediaPlayerServiceConnection @Inject constructor(
         mediaBrowser.sendCustomAction(START_MEDIA_PLAY_ACTION, null, null)
     }
 
-
     fun fastForward(seconds: Int = 10) {
         playBackState.value?.currentPosition?.let {
             transportControl.seekTo(it + seconds * 1000)

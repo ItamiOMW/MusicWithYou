@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.current_song
+package com.example.musicwithyou.presentation.screens.playing_now
 
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,7 +25,7 @@ import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.MainViewModel
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongActionsSheetContent
+import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.example.musicwithyou.utils.timestampToDuration
@@ -67,7 +67,7 @@ fun PlayingNowScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(10.dp),
+                    .padding(15.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +123,6 @@ fun PlayingNowScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
                     Icon(
                         painter = painterResource(id = R.drawable.isnt_favorite),
                         contentDescription = stringResource(id = R.string.close_current_playing_desc),

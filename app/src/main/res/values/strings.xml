@@ -51,4 +51,7 @@
     <string name="close_current_playing_desc">Close Current Playing Song screen</string>
     <string name="queue_songs_desc">Queue of current playing songs</string>
     <string name="shuffle_mode_desc">Shuffle mode</string>
+    <string name="close_current_queue_desc">Close current queue screen</string>
+    <string name="current_queue_title">Current queue</string>
+    <string name="delete_from_queue">Delete from queue</string>
 </resources>

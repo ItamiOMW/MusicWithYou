@@ -1,6 +1,5 @@
 package com.example.musicwithyou.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -20,14 +19,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.domain.models.Song
+import com.example.musicwithyou.presentation.components.waveform.WaveformAnim
 import com.example.musicwithyou.utils.timestampToDuration
 
 
 @Composable
 fun SongCard(
     song: Song,
-    onSongClicked: (Song) -> Unit,
     onOptionsClicked: (Song) -> Unit,
+    modifier: Modifier = Modifier,
+    isCurrentSong: Boolean = false,
     isSongPlaying: Boolean = false,
     backgroundColor: Color = Color.Transparent,
     secondaryVariantColor: Color = MaterialTheme.colors.surface,
@@ -35,32 +36,20 @@ fun SongCard(
 
 
     Row(
-        modifier = Modifier
-            .padding(top = 10.dp, bottom = 10.dp)
-            .fillMaxSize()
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(10.dp))
-            .background(backgroundColor)
-            .clickable {
-                onSongClicked(song)
-            }
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
-                .fillMaxHeight(1f)
-                .wrapContentWidth()
+                .size(55.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .align(Alignment.CenterVertically)
         ) {
             AsyncImage(
                 model = song.imageUri,
                 contentDescription = stringResource(id = R.string.song_image_desc),
-                modifier = Modifier.size(50.dp),
+                modifier = Modifier.fillMaxSize(),
                 error = painterResource(id = R.drawable.unknown_song)
             )
-            if (isSongPlaying) {
-                //Todo add animation of audio visualization
-            }
         }
         Spacer(modifier = Modifier.width(8.dp))
         Row(
@@ -101,23 +90,46 @@ fun SongCard(
                     )
                 }
             }
-            Box(
-                contentAlignment = Alignment.CenterEnd,
-                modifier = Modifier.weight(1f)
+            Spacer(modifier = Modifier.width(6.dp))
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.options),
-                    contentDescription = stringResource(R.string.options_desc),
-                    tint = MaterialTheme.colors.secondaryVariant,
+                Box(
                     modifier = Modifier
-                        .size(30.dp)
-                        .padding(end = 5.dp)
-                        .align(Alignment.CenterEnd)
-                        .clip(CircleShape)
-                        .clickable {
-                            onOptionsClicked(song)
-                        }
-                )
+                        .weight(1f)
+                        .align(Alignment.Bottom)
+                        .size(50.dp),
+                ) {
+                    if (isCurrentSong) {
+                        WaveformAnim(
+                            modifier = Modifier.fillMaxSize(),
+                            barWidth = 3.dp,
+                            gapWidth = 2.dp,
+                            isAnimating = isSongPlaying,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.options),
+                        contentDescription = stringResource(R.string.options_desc),
+                        tint = MaterialTheme.colors.secondaryVariant,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .size(30.dp)
+                            .padding(end = 5.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                onOptionsClicked(song)
+                            }
+                    )
+                }
             }
         }
     }

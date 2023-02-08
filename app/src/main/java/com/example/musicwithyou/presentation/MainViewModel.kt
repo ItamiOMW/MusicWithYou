@@ -79,8 +79,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun playSong(currentSong: Song, currentSongList: List<Song>) {
-        if (currentSong.id == currentPlayingSong.value?.id) {
+    fun playSong(song: Song, currentSongList: List<Song>) {
+        if (song.id == currentPlayingSong.value?.id) {
             if (isSongPlaying.value) {
                 serviceConnection.transportControl.pause()
             } else {
@@ -89,8 +89,23 @@ class MainViewModel @Inject constructor(
         } else {
             songList = currentSongList
             serviceConnection.playAudio(songList)
-            serviceConnection.transportControl.playFromMediaId(currentSong.id.toString(), null)
+            serviceConnection.transportControl.playFromMediaId(song.id.toString(), null)
         }
+    }
+
+    fun swapSongs(from: Int, to: Int) {
+        val fromSong = songList[from]
+        val toSong = songList[to]
+        val newList = songList.toMutableList()
+        newList[from] = toSong
+        newList[to] = fromSong
+        songList = newList
+        serviceConnection.playAudio(songList)
+        serviceConnection.transportControl.playFromMediaId(
+            currentPlayingSong.value?.id.toString(),
+            null
+        )
+        seekTo(currentSongProgress.value)
     }
 
     fun playShuffled(currentSongList: List<Song>) {
@@ -105,18 +120,6 @@ class MainViewModel @Inject constructor(
 
     fun repeatMode() {
         serviceConnection.repeat()
-    }
-
-    fun stopPlayback() {
-        serviceConnection.transportControl.stop()
-    }
-
-    fun fastForward() {
-        serviceConnection.fastForward()
-    }
-
-    fun rewind() {
-        serviceConnection.rewind()
     }
 
     fun skipToNext() {
