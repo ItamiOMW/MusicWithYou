@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                                                 mainViewModel.currentPlayingSong.value?.let {
                                                     mainViewModel.playSong(
                                                         it,
-                                                        mainViewModel.songList
+                                                        mainViewModel.songQueue.value
                                                     )
                                                 }
                                             },

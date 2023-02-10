@@ -40,6 +40,8 @@ fun PlayingNowScreen(
     playingNowViewModel: PlayingNowViewModel = hiltViewModel(),
 ) {
 
+    val currentQueue = mainViewModel.songQueue.value
+
     val currentSong = mainViewModel.currentPlayingSong.value
 
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -272,7 +274,7 @@ fun PlayingNowScreen(
                             .clickable {
                                 mainViewModel.playSong(
                                     currentSong,
-                                    mainViewModel.songList
+                                    currentQueue
                                 )
                             }
                     ) {
@@ -320,5 +322,7 @@ fun PlayingNowScreen(
                 }
             }
         }
+    } else {
+        navController.navigateUp()
     }
 }

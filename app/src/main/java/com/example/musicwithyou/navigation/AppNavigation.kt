@@ -19,7 +19,6 @@ fun AppNavigation(
     navController: NavHostController,
     mainViewModel: MainViewModel,
 ) {
-    //Todo handle animations correct
     AnimatedNavHost(
         navController = navController,
         startDestination = Screen.MainTabsScreen.route

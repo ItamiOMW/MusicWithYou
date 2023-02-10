@@ -182,14 +182,21 @@ fun SongsPagerScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
-                                                        //Todo add song to queue as next song to play
+                                                        bottomSheetScope.launch {
+                                                            mainViewModel.playNext(song)
+                                                            bottomSheetState.hide()
+                                                        }
                                                     },
                                                     iconId = R.drawable.play_next
                                                 ),
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
-                                                        //Todo add song to the end of current queue
+                                                        bottomSheetScope.launch {
+                                                            mainViewModel.addToQueue(song)
+                                                            bottomSheetState.hide()
+                                                        }
+
                                                     },
                                                     iconId = R.drawable.queue
                                                 ),

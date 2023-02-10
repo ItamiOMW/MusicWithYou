@@ -13,7 +13,3 @@ fun Long.timestampToDuration(): String {
     return if (this < 0) "--:--"
     else "%d:%02d".format(minutes,remainingSeconds)
 }
-
-fun Long.timestampToSeconds(): Long {
-    return floor(this / 1E3).toLong()
-}

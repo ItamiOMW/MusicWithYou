@@ -33,9 +33,6 @@ class SongContentResolver @Inject constructor(
             val yearColumn =
                 crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.YEAR)
 
-            val dataColumn =
-                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
-
             val durationColumn =
                 crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
 
@@ -56,7 +53,6 @@ class SongContentResolver @Inject constructor(
                     while (crsr.moveToNext()) {
                         val id = getLong(idColumn)
                         val title = getString(titleColumn)
-                        val data = getString(dataColumn)
                         val duration = getLong(durationColumn)
                         val year = getInt(yearColumn)
                         val albumId = getLong(albumIdColumn)
@@ -76,7 +72,6 @@ class SongContentResolver @Inject constructor(
                             title,
                             songUri.toString(),
                             imageUri.toString(),
-                            data,
                             duration,
                             year,
                             albumId,
@@ -88,7 +83,6 @@ class SongContentResolver @Inject constructor(
                     }
                 }
             }
-
         }
         cursor?.close()
         return songList
@@ -100,7 +94,6 @@ class SongContentResolver @Inject constructor(
             MediaStore.Audio.AudioColumns._ID,
             MediaStore.Audio.AudioColumns.ARTIST,
             MediaStore.Audio.AudioColumns.ARTIST_ID,
-            MediaStore.Audio.AudioColumns.DATA,
             MediaStore.Audio.AudioColumns.DURATION,
             MediaStore.Audio.AudioColumns.TITLE,
             MediaStore.Audio.AudioColumns.ALBUM,

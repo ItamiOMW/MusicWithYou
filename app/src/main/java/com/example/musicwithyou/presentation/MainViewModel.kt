@@ -13,6 +13,7 @@ import com.example.musicwithyou.media.utils.MEDIA_ROOT_ID
 import com.example.musicwithyou.media.utils.PLAYBACK_UPDATE_INTERVAL
 import com.example.musicwithyou.media.utils.currentPosition
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +24,7 @@ class MainViewModel @Inject constructor(
     serviceConnection: MediaPlayerServiceConnection,
 ) : ViewModel() {
 
-    var songList by mutableStateOf<List<Song>>(emptyList())
-        private set
+    val songQueue = serviceConnection.songQueue
 
     val currentPlayingSong = serviceConnection.currentPlayingSong
 
@@ -43,8 +43,7 @@ class MainViewModel @Inject constructor(
     var currentSongProgress = mutableStateOf(0f)
         private set
 
-    lateinit var rootMediaId: String
-        private set
+    private lateinit var rootMediaId: String
 
     private val isConnected = serviceConnection.isConnected
 
@@ -87,31 +86,31 @@ class MainViewModel @Inject constructor(
                 serviceConnection.transportControl.play()
             }
         } else {
-            songList = currentSongList
-            serviceConnection.playAudio(songList)
+            serviceConnection.playQueue(currentSongList)
             serviceConnection.transportControl.playFromMediaId(song.id.toString(), null)
         }
     }
 
-    fun swapSongs(from: Int, to: Int) {
-        val fromSong = songList[from]
-        val toSong = songList[to]
-        val newList = songList.toMutableList()
-        newList[from] = toSong
-        newList[to] = fromSong
-        songList = newList
-        serviceConnection.playAudio(songList)
-        serviceConnection.transportControl.playFromMediaId(
-            currentPlayingSong.value?.id.toString(),
-            null
-        )
-        seekTo(currentSongProgress.value)
+    fun moveSong(from: Int, to: Int) {
+        serviceConnection.moveSong(from, to)
+    }
+
+    fun deleteFromQueue(song: Song) {
+        serviceConnection.deleteQueueItem(song)
+    }
+
+    fun playNext(song: Song) {
+        serviceConnection.playNext(song)
+    }
+
+    fun addToQueue(song: Song) {
+        serviceConnection.addSongToQueue(song)
     }
 
     fun playShuffled(currentSongList: List<Song>) {
-        songList = currentSongList.shuffled()
-        serviceConnection.playAudio(songList)
-        serviceConnection.transportControl.playFromMediaId(songList.first().id.toString(), null)
+        val shuffledList = currentSongList.shuffled()
+        serviceConnection.playQueue(shuffledList)
+        serviceConnection.transportControl.playFromMediaId(shuffledList.first().id.toString(), null)
     }
 
     fun shuffleMode() {
@@ -140,7 +139,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updatePlayback() {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             val position = playbackState.value?.currentPosition ?: 0
 
             if (currentPlaybackPosition != position) {
