@@ -9,6 +9,7 @@ import com.example.musicwithyou.domain.usecase.song_usecase.GetSongsUseCase
 import com.example.musicwithyou.domain.utils.OrderType
 import com.example.musicwithyou.domain.utils.SongOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class SongsViewModel @Inject constructor(
         songOrder: SongOrder = SongOrder.Title(OrderType.Ascending),
     ) {
         getSongsJob?.cancel()
-        getSongsJob = viewModelScope.launch {
+        getSongsJob = viewModelScope.launch() {
             state = state.copy(isRefreshing = true)
             val songs = getSongsUseCase.invoke(songOrder = songOrder)
             state = state.copy(songs = songs, songOrder = songOrder, isRefreshing = false)

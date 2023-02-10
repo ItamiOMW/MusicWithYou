@@ -5,8 +5,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.example.musicwithyou.presentation.MainViewModel
-import com.example.musicwithyou.presentation.screens.current_playlist.CurrentQueueScreen
-import com.example.musicwithyou.presentation.screens.current_song.PlayingNowScreen
+import com.example.musicwithyou.presentation.screens.current_queue.CurrentQueueScreen
+import com.example.musicwithyou.presentation.screens.playing_now.PlayingNowScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.MainTabsScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -19,7 +19,6 @@ fun AppNavigation(
     navController: NavHostController,
     mainViewModel: MainViewModel,
 ) {
-    //Todo handle animations correct
     AnimatedNavHost(
         navController = navController,
         startDestination = Screen.MainTabsScreen.route
@@ -49,16 +48,16 @@ fun AppNavigation(
         composable(
             Screen.CurrentQueueScreen.route,
             enterTransition = {
-                slideInHorizontally(initialOffsetX = { it/2  }, animationSpec = tween(500))
+                slideInHorizontally(initialOffsetX = { it  }, animationSpec = tween(500))
             },
             exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -it/2  }, animationSpec = tween(500))
+                slideOutHorizontally(targetOffsetX = { -it  }, animationSpec = tween(500))
             },
             popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -it/2 }, animationSpec = tween(500))
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(500))
             },
             popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { it/2  }, animationSpec = tween(500))
+                slideOutHorizontally(targetOffsetX = { it  }, animationSpec = tween(500))
             }
         ) {
             CurrentQueueScreen(navController = navController, mainViewModel = mainViewModel)

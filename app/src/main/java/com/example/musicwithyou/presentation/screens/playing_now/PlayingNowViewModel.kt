@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.current_song
+package com.example.musicwithyou.presentation.screens.playing_now
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

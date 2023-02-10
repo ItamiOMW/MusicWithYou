@@ -1,5 +1,8 @@
 package com.example.musicwithyou.presentation.screens.main_tabs.songs
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,14 +14,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.components.SongCard
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSectionSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
@@ -27,7 +31,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SongsPagerScreen(
     navController: NavController,
@@ -151,16 +155,24 @@ fun SongsPagerScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(songs) { song ->
+                    items(songs, key = { it.id }) { song ->
                         SongCard(
                             song = song,
-                            onSongClicked = {
-                                mainViewModel.playSong(
-                                    currentSong = it,
-                                    songs
-                                )
-                            },
-                            isSongPlaying = song == mainViewModel.currentPlayingSong.value,
+                            isCurrentSong = song == mainViewModel.currentPlayingSong.value,
+                            isSongPlaying = mainViewModel.isSongPlaying.value,
+                            modifier = Modifier
+                                .padding(top = 10.dp, bottom = 10.dp)
+                                .fillMaxSize()
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color.Transparent)
+                                .animateItemPlacement(animationSpec = tween(500))
+                                .clickable {
+                                    mainViewModel.playSong(
+                                        song = song,
+                                        songs
+                                    )
+                                },
                             onOptionsClicked = {
                                 bottomSheetScope.launch {
                                     customSheetContent = {
@@ -170,14 +182,21 @@ fun SongsPagerScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
-                                                        //Todo add song to queue as next song to play
+                                                        bottomSheetScope.launch {
+                                                            mainViewModel.playNext(song)
+                                                            bottomSheetState.hide()
+                                                        }
                                                     },
                                                     iconId = R.drawable.play_next
                                                 ),
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
-                                                        //Todo add song to the end of current queue
+                                                        bottomSheetScope.launch {
+                                                            mainViewModel.addToQueue(song)
+                                                            bottomSheetState.hide()
+                                                        }
+
                                                     },
                                                     iconId = R.drawable.queue
                                                 ),

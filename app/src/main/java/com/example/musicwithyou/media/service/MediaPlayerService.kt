@@ -17,10 +17,9 @@ import androidx.media.MediaBrowserServiceCompat
 import com.example.musicwithyou.R
 import com.example.musicwithyou.media.exoplayer.MediaPlayerNotificationManager
 import com.example.musicwithyou.media.exoplayer.MediaSource
-import com.example.musicwithyou.media.utils.MEDIA_ROOT_ID
-import com.example.musicwithyou.media.utils.REFRESH_MEDIA_PLAY_ACTION
-import com.example.musicwithyou.media.utils.START_MEDIA_PLAY_ACTION
+import com.example.musicwithyou.media.utils.*
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -71,7 +70,6 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
     }
 
-
     override fun onCreate() {
         super.onCreate()
         val sessionActivityIntent = packageManager
@@ -87,6 +85,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         mediaSession = MediaSessionCompat(this, TAG).apply {
             setSessionActivity(sessionActivityIntent)
+            setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS)
             isActive = true
         }
 
@@ -99,8 +98,14 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         )
 
         mediaSessionConnector = MediaSessionConnector(mediaSession).apply {
+            mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                        or MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS
+                        or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            )
             setPlaybackPreparer(AudioMediaPlayBackPreparer())
             setQueueNavigator(MediaQueueNavigator(mediaSession))
+            setQueueEditor(MediaSessionConnectorQueueHandler())
             setPlayer(exoPlayer)
         }
 
@@ -166,6 +171,28 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                 mediaSource.refresh()
                 notifyChildrenChanged(MEDIA_ROOT_ID)
             }
+            SET_SONG_AS_NEXT_ACTION -> {
+                val metadata =
+                    extras?.getParcelable(MEDIA_METADATA_KEY) as MediaMetadataCompat?
+                        ?: return
+                val item = mediaSource.audioMediaMetaData.value.find {
+                    it.description.mediaId == metadata.description.mediaId
+                }
+                if (item != null) {
+                    val index = mediaSource.audioMediaMetaData.value.indexOf(item)
+                    exoPlayer.removeMediaItem(index)
+                    mediaSource.deleteMedia(metadata)
+                }
+                metadata.description.mediaUri?.let { MediaItem.fromUri(it) }
+                    ?.let { exoPlayer.addMediaItem(exoPlayer.currentMediaItemIndex + 1, it) }
+                mediaSource.addMedia(metadata, exoPlayer.currentMediaItemIndex + 1)
+            }
+            MOVE_SONG_ACTION -> {
+                val fromIndex = extras?.getInt(MOVE_FROM_KEY) ?: return
+                val toIndex = extras.getInt(MOVE_TO_KEY)
+                mediaSource.moveMedia(fromIndex, toIndex)
+                exoPlayer.moveMediaItem(fromIndex, toIndex)
+            }
             else -> Unit
         }
 
@@ -198,6 +225,44 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         }
     }
 
+    inner class MediaSessionConnectorQueueHandler : MediaSessionConnector.QueueEditor {
+        override fun onCommand(
+            player: Player,
+            command: String,
+            extras: Bundle?,
+            cb: ResultReceiver?,
+        ): Boolean {
+            return true
+        }
+
+        override fun onAddQueueItem(player: Player, description: MediaDescriptionCompat) {
+            val metadata = description.toMediaMetadata()
+            description.mediaUri?.let { MediaItem.fromUri(it) }?.let { exoPlayer.addMediaItem(it) }
+            mediaSource.addMedia(metadata)
+        }
+
+        override fun onAddQueueItem(
+            player: Player,
+            description: MediaDescriptionCompat,
+            index: Int,
+        ) {
+            val metadata = description.toMediaMetadata()
+            description.mediaUri?.let { MediaItem.fromUri(it) }
+                ?.let { exoPlayer.addMediaItem(index, it) }
+            mediaSource.addMedia(metadata, index)
+        }
+
+        override fun onRemoveQueueItem(player: Player, description: MediaDescriptionCompat) {
+            val mediaMetadata = mediaSource.audioMediaMetaData.value.first {
+                it.description.mediaId == description.mediaId
+            }
+            val index = mediaSource.audioMediaMetaData.value.indexOf(mediaMetadata)
+            exoPlayer.removeMediaItem(index)
+            mediaSource.deleteMedia(mediaMetadata)
+        }
+
+    }
+
     inner class AudioMediaPlayBackPreparer : MediaSessionConnector.PlaybackPreparer {
 
         override fun onCommand(
@@ -206,7 +271,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             extras: Bundle?,
             cb: ResultReceiver?,
         ): Boolean {
-            return false
+            return true
         }
 
         override fun getSupportedPrepareActions(): Long =
@@ -222,14 +287,14 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         ) {
             mediaSource.whenReady {
 
-                val itemToPlay = mediaSource.audioMediaMetaData.find {
+                val itemToPlay = mediaSource.audioMediaMetaData.value.find {
                     it.description.mediaId == mediaId
                 }
 
                 currentPlayingMedia = itemToPlay
 
                 preparePlayer(
-                    mediaMetadata = mediaSource.audioMediaMetaData,
+                    mediaMetadata = mediaSource.audioMediaMetaData.value,
                     itemToPlay = itemToPlay,
                     playWhenReady = playWhenReady
                 )
@@ -259,14 +324,13 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             windowIndex: Int,
         ): MediaDescriptionCompat {
 
-            if (windowIndex < mediaSource.audioMediaMetaData.size) {
-                return mediaSource.audioMediaMetaData[windowIndex].description
+            if (windowIndex < mediaSource.audioMediaMetaData.value.size) {
+                return mediaSource.audioMediaMetaData.value[windowIndex].description
             }
 
             return MediaDescriptionCompat.Builder().build()
 
         }
-
 
     }
 
@@ -278,15 +342,21 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
         val indexToPlay = if (currentPlayingMedia == null) 0
         else mediaMetadata.indexOf(itemToPlay)
 
+        val items: List<MediaItem> = mediaMetadata.map {
+            it.description.mediaUri?.let { it1 -> MediaItem.fromUri(it1) }!!
+        }
+
         exoPlayer.addListener(PlayerEventListener())
-        exoPlayer.setMediaSource(mediaSource.asMediaSource(dataSourceFactory))
+        exoPlayer.setMediaItems(items)
         exoPlayer.prepare()
         exoPlayer.seekTo(indexToPlay, 0)
         exoPlayer.playWhenReady = playWhenReady
 
     }
 
+
     private inner class PlayerEventListener : Player.Listener {
+
 
         override fun onPlaybackStateChanged(playbackState: Int) {
 
@@ -302,6 +372,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             }
 
         }
+
 
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
@@ -319,6 +390,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
             Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
 
         }
+
 
     }
 

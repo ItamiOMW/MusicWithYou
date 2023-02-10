@@ -2,19 +2,22 @@ package com.example.musicwithyou.media.exoplayer
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.runtime.mutableStateOf
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.media.service.MediaPlayerService
-import com.example.musicwithyou.media.utils.REFRESH_MEDIA_PLAY_ACTION
-import com.example.musicwithyou.media.utils.START_MEDIA_PLAY_ACTION
-import com.example.musicwithyou.media.utils.currentPosition
-import com.example.musicwithyou.media.utils.isPlaying
+import com.example.musicwithyou.media.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -49,9 +52,9 @@ class MediaPlayerServiceConnection @Inject constructor(
     var shuffleMode = mutableStateOf(PlaybackStateCompat.SHUFFLE_MODE_NONE)
         private set
 
-    private lateinit var mediaControllerCompat: MediaControllerCompat
+    val songQueue = mutableStateOf<List<Song>>(emptyList())
 
-    private var songList = mutableListOf<Song>()
+    private lateinit var mediaControllerCompat: MediaControllerCompat
 
     private val mediaBrowserServiceCallback = MediaBrowserConnectionCallback(context)
 
@@ -64,23 +67,77 @@ class MediaPlayerServiceConnection @Inject constructor(
         connect()
     }
 
-    fun playAudio(songs: List<Song>) {
-        songList = songs.toMutableList()
+    init {
+        CoroutineScope(Dispatchers.Main.immediate).launch {
+            mediaSource.audioMediaMetaData.map {
+                it.map { metadata -> metadata.toSong() }
+            }.collect { list ->
+                songQueue.value = list
+            }
+        }
+    }
+
+    fun playQueue(songs: List<Song>) {
+        songQueue.value = songs.toMutableList()
         mediaSource.loadData(songs)
         mediaBrowser.sendCustomAction(START_MEDIA_PLAY_ACTION, null, null)
     }
 
-
-    fun fastForward(seconds: Int = 10) {
-        playBackState.value?.currentPosition?.let {
-            transportControl.seekTo(it + seconds * 1000)
+    fun addSongToQueue(song: Song) {
+        if (songQueue.value.isEmpty()) {
+            val newList = songQueue.value.toMutableList()
+            newList.add(song)
+            mediaSource.loadData(newList)
+            transportControl.playFromMediaId(song.id.toString(), null)
+        } else {
+            if (songQueue.value.contains(song)) {
+                return
+            } else {
+                val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
+                mediaControllerCompat.addQueueItem(descriptionWithExtras)
+            }
         }
     }
 
-    fun rewind(seconds: Int = 10) {
-        playBackState.value?.currentPosition?.let {
-            transportControl.seekTo(it - seconds * 1000)
+    fun deleteQueueItem(song: Song) {
+        if (!songQueue.value.contains(song)) {
+            return
+        } else {
+            val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
+            mediaControllerCompat.removeQueueItem(descriptionWithExtras)
         }
+    }
+
+    fun playNext(song: Song) {
+        if (songQueue.value.isEmpty()) {
+            val newList = songQueue.value.toMutableList()
+            newList.add(song)
+            mediaSource.loadData(newList)
+            transportControl.playFromMediaId(song.id.toString(), null)
+            return
+        }
+        if (currentPlayingSong.value == song) {
+            return
+        }
+        val metadata = song.toMediaMetadata()
+        mediaBrowser.sendCustomAction(
+            SET_SONG_AS_NEXT_ACTION,
+            Bundle().apply {
+                putParcelable(MEDIA_METADATA_KEY, metadata)
+            },
+            null
+        )
+    }
+
+    fun moveSong(from: Int, to: Int) {
+        mediaBrowser.sendCustomAction(
+            MOVE_SONG_ACTION,
+            Bundle().apply {
+                putInt(MOVE_FROM_KEY, from)
+                putInt(MOVE_TO_KEY, to)
+            },
+            null
+        )
     }
 
     fun repeat() {
@@ -122,10 +179,6 @@ class MediaPlayerServiceConnection @Inject constructor(
         mediaBrowser.unsubscribe(parentId, callback)
     }
 
-    fun refreshMediaBrowserChildren() {
-        mediaBrowser.sendCustomAction(REFRESH_MEDIA_PLAY_ACTION, null, null)
-    }
-
     private inner class MediaBrowserConnectionCallback(
         private val context: Context,
     ) : MediaBrowserCompat.ConnectionCallback() {
@@ -147,9 +200,15 @@ class MediaPlayerServiceConnection @Inject constructor(
         override fun onConnectionFailed() {
             _isConnected.value = false
         }
+
+
     }
 
-    private inner class MediaControllerCallBack() : MediaControllerCompat.Callback() {
+    private inner class MediaControllerCallBack : MediaControllerCompat.Callback() {
+
+        override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
+            super.onQueueChanged(queue)
+        }
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             super.onPlaybackStateChanged(state)
@@ -160,7 +219,7 @@ class MediaPlayerServiceConnection @Inject constructor(
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             super.onMetadataChanged(metadata)
             currentPlayingSong.value = metadata?.let { data ->
-                songList.find { song ->
+                songQueue.value.find { song ->
                     song.id.toString() == data.description.mediaId
                 }
             }

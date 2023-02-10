@@ -38,7 +38,7 @@ object AppModule {
         mediaSource: MediaSource,
     ): MediaPlayerServiceConnection = MediaPlayerServiceConnection(
         context = context,
-        mediaSource = mediaSource
+        mediaSource = mediaSource,
     )
 
 }
