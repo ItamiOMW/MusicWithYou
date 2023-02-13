@@ -1,7 +1,11 @@
-package com.example.musicwithyou.domain.models
+package com.example.musicwithyou.data.local.room.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Song(
+@Entity("song_table")
+data class SongEntity(
+    @PrimaryKey
     val id: Long,
     val title: String,
     val songUri: String,

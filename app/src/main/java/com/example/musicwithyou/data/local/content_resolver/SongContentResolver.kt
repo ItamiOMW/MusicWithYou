@@ -77,7 +77,7 @@ class SongContentResolver @Inject constructor(
                             albumId,
                             albumName,
                             artistId,
-                            artistName
+                            artistName,
                         )
                         songList.add(song)
                     }

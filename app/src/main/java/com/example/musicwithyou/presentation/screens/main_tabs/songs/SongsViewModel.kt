@@ -5,18 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.musicwithyou.domain.usecase.song_usecase.GetSongsUseCase
+import com.example.musicwithyou.domain.usecase.song_usecase.SongUseCases
 import com.example.musicwithyou.domain.utils.OrderType
 import com.example.musicwithyou.domain.utils.SongOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SongsViewModel @Inject constructor(
-    private val getSongsUseCase: GetSongsUseCase,
+    private val songUseCases: SongUseCases,
 ) : ViewModel() {
 
     var state by mutableStateOf(SongsState())
@@ -61,7 +60,7 @@ class SongsViewModel @Inject constructor(
         getSongsJob?.cancel()
         getSongsJob = viewModelScope.launch() {
             state = state.copy(isRefreshing = true)
-            val songs = getSongsUseCase.invoke(songOrder = songOrder)
+            val songs = songUseCases.getSongs(songOrder = songOrder)
             state = state.copy(songs = songs, songOrder = songOrder, isRefreshing = false)
         }
     }

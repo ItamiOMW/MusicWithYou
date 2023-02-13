@@ -13,7 +13,6 @@ import com.example.musicwithyou.media.utils.MEDIA_ROOT_ID
 import com.example.musicwithyou.media.utils.PLAYBACK_UPDATE_INTERVAL
 import com.example.musicwithyou.media.utils.currentPosition
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
