@@ -1,7 +1,6 @@
 package com.example.musicwithyou.presentation.screens.current_queue
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -93,11 +92,11 @@ fun CurrentQueueScreen(
                     .reorderable(reordableState)
                     .detectReorderAfterLongPress(reordableState)
             ) {
-                items(currentQueue, {it}) { song ->
+                items(currentQueue, { it.id }) { song ->
                     ReorderableItem(
                         reorderableState = reordableState,
-                        key = song
-                    ) {isDragging ->
+                        key = song.id,
+                    ) { isDragging ->
                         val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                         SongCard(
                             song = song,
@@ -110,7 +109,6 @@ fun CurrentQueueScreen(
                                 .shadow(elevation.value)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.colors.background)
-                                .animateItemPlacement(animationSpec = tween(500))
                                 .clickable {
                                     mainViewModel.playSong(
                                         song = song,
@@ -164,74 +162,6 @@ fun CurrentQueueScreen(
                     }
                 }
             }
-//            DragDropColumn(
-//                items = currentQueue,
-//                onSwap = { from, to ->
-//                    mainViewModel.moveSong(from, to)
-//                }
-//            ) { song ->
-//                SongCard(
-//                    song = song,
-//                    isSongPlaying = mainViewModel.isSongPlaying.value,
-//                    isCurrentSong = song == mainViewModel.currentPlayingSong.value,
-//                    modifier = Modifier
-//                        .padding(top = 10.dp, bottom = 10.dp)
-//                        .fillMaxSize()
-//                        .fillMaxHeight()
-//                        .clip(RoundedCornerShape(10.dp))
-//                        .background(MaterialTheme.colors.background)
-//                        .animateItemPlacement(animationSpec = tween(500))
-//                        .clickable {
-//                            mainViewModel.playSong(
-//                                song = song,
-//                                currentQueue
-//                            )
-//                        },
-//                    onOptionsClicked = {
-//                        coroutineScope.launch {
-//                            customSheetContent = {
-//                                SongActionsSheetContent(
-//                                    song = song,
-//                                    items = listOf(
-//                                        ActionItem(
-//                                            actionTitle = stringResource(R.string.add_to_playlist),
-//                                            itemClicked = {
-//                                                //Todo Launch new sheet content with playlists
-//                                            },
-//                                            iconId = R.drawable.add_to_playlist
-//                                        ),
-//                                        ActionItem(
-//                                            actionTitle = stringResource(R.string.install_as_ringtone),
-//                                            itemClicked = {
-//                                                //Todo install song as ringtone
-//                                            },
-//                                            iconId = R.drawable.bell
-//                                        ),
-//                                        ActionItem(
-//                                            actionTitle = stringResource(R.string.delete_from_queue),
-//                                            itemClicked = {
-//                                                coroutineScope.launch {
-//                                                    mainViewModel.deleteFromQueue(song)
-//                                                    modalBottomSheetState.hide()
-//                                                }
-//                                            },
-//                                            iconId = R.drawable.remove
-//                                        ),
-//                                        ActionItem(
-//                                            actionTitle = stringResource(R.string.delete_from_device),
-//                                            itemClicked = {
-//                                                //Todo delete from device
-//                                            },
-//                                            iconId = R.drawable.delete
-//                                        )
-//                                    )
-//                                )
-//                            }
-//                            modalBottomSheetState.show()
-//                        }
-//                    }
-//                )
-//            }
         }
     }
 

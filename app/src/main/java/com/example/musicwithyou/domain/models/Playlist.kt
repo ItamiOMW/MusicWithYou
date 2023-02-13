@@ -1,10 +1,10 @@
 package com.example.musicwithyou.domain.models
 
-data class PlayList(
+data class Playlist(
     val id: Int,
     val title: String,
-    val songs: List<Song>,
+    val songIds: List<Long>,
     val createdTimeStamp: Long,
-    val isDeletable: Boolean,
-    val isEditable: Boolean,
+    val iconId: Int? = null,
+    val isDefault: Boolean,
 )

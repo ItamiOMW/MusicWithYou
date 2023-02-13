@@ -5,6 +5,7 @@ import com.example.musicwithyou.data.local.content_resolver.ContentResolverHelpe
 import com.example.musicwithyou.data.local.content_resolver.SongContentResolver
 import com.example.musicwithyou.data.repository.SongRepositoryImpl
 import com.example.musicwithyou.domain.models.Song
+import com.example.musicwithyou.domain.repository.PlaylistRepository
 import com.example.musicwithyou.domain.repository.SongRepository
 import com.example.musicwithyou.media.exoplayer.MediaPlayerServiceConnection
 import com.example.musicwithyou.media.exoplayer.MediaSource
@@ -21,15 +22,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun bindSongContentResolver(
+    fun provideSongContentResolver(
         contentResolver: SongContentResolver,
     ): ContentResolverHelper<Song> = contentResolver
 
     @Provides
     @Singleton
-    fun bindSongRepository(
+    fun provideSongRepository(
         songRepository: SongRepositoryImpl,
     ): SongRepository = songRepository
+
+    @Provides
+    @Singleton
+    fun providePlaylistRepository(
+        playListRepository: PlaylistRepository,
+    ): PlaylistRepository = playListRepository
 
     @Provides
     @Singleton
