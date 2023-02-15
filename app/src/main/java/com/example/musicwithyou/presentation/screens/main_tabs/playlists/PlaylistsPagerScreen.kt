@@ -271,7 +271,7 @@ fun PlaylistsPagerScreen(
                                                             )
                                                         )
                                                     },
-                                                    iconId = R.drawable.play_next
+                                                    iconId = R.drawable.edit
                                                 ),
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.delete),
