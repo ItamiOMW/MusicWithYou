@@ -20,9 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
-import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
-import com.example.musicwithyou.presentation.components.SongCard
+import com.example.musicwithyou.presentation.components.SongItem
 import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSectionSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
@@ -156,7 +157,7 @@ fun SongsPagerScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(songs, key = { it.id }) { song ->
-                        SongCard(
+                        SongItem(
                             song = song,
                             isCurrentSong = song == mainViewModel.currentPlayingSong.value,
                             isSongPlaying = mainViewModel.isSongPlaying.value,
@@ -203,7 +204,35 @@ fun SongsPagerScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_playlist),
                                                     itemClicked = {
-                                                        //Todo Launch new sheet content with playlists
+                                                        bottomSheetScope.launch {
+                                                            customSheetContent = {
+                                                                AddToPlaylistSheetContent(
+                                                                    modifier = Modifier
+                                                                        .fillMaxHeight(0.5f),
+                                                                    playlists = mainViewModel.playlists,
+                                                                    onCreateNewPlaylist = {
+                                                                        mainViewModel.onShowCreatePlaylistDialog(
+                                                                            listOf(song)
+                                                                        )
+                                                                        bottomSheetScope.launch {
+                                                                            bottomSheetState.hide()
+                                                                        }
+                                                                    },
+                                                                    onPlaylistClick = {
+                                                                        mainViewModel.addToPlaylist(
+                                                                            listOf(song),
+                                                                            it
+                                                                        )
+                                                                        bottomSheetScope.launch {
+                                                                            bottomSheetState.hide()
+                                                                        }
+                                                                    }
+                                                                )
+                                                            }
+                                                            bottomSheetScope.launch {
+                                                                bottomSheetState.show()
+                                                            }
+                                                        }
                                                     },
                                                     iconId = R.drawable.add_to_playlist
                                                 ),
@@ -217,11 +246,7 @@ fun SongsPagerScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.delete_from_device),
                                                     itemClicked = {
-                                                        songsViewModel.onEvent(
-                                                            SongsEvent.DeleteSong(
-                                                                song
-                                                            )
-                                                        )
+                                                        //Delete from device
                                                     },
                                                     iconId = R.drawable.delete
                                                 )

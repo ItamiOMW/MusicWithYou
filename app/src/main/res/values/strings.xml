@@ -55,4 +55,14 @@
     <string name="current_queue_title">Current queue</string>
     <string name="delete_from_queue">Delete from queue</string>
     <string name="favorites_playlist_title">Favorites</string>
+    <string name="creating_playlist_title">Creating a playlist</string>
+    <string name="enter_title_hint">Enter a title...</string>
+    <string name="create">Create</string>
+    <string name="title_is_empty">Title is empty</string>
+    <string name="delete">Delete</string>
+    <string name="delete_playlist">Delete playlist</string>
+    <string name="renaming_playlist">Renaming a playlist</string>
+    <string name="rename">Rename</string>
+    <string name="create_new_playlist">Create new playlist</string>
+    <string name="item_icon_desc">Icon of Item</string>
 </resources>

@@ -18,6 +18,10 @@ const val SET_SONG_AS_NEXT_ACTION = "play_next"
 
 const val MEDIA_METADATA_KEY = "mediaMetadata"
 
+const val SET_SONGS_AS_NEXT_ACTION = "play_next_song"
+
+const val MEDIA_METADATA_ARRAY_KEY = "play_next_songs"
+
 
 //To swap songs
 const val MOVE_SONG_ACTION = "swap_songs"

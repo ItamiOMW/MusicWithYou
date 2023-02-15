@@ -20,7 +20,7 @@ import com.example.musicwithyou.R
 
 
 @Composable
-fun TopBar(
+fun CustomTopBar(
     isVisible: Boolean,
     onNavigationIconClicked: () -> Unit,
     onSearchFieldClicked: () -> Unit,

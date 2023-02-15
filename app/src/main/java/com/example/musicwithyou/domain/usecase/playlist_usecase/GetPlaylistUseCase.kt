@@ -7,6 +7,6 @@ class GetPlaylistUseCase @Inject constructor(
     private val repository: PlaylistRepository
 ) {
 
-    suspend operator fun invoke(id: Int) = repository.getPlaylist(id)
+    suspend operator fun invoke(id: Long) = repository.getPlaylist(id)
 
 }

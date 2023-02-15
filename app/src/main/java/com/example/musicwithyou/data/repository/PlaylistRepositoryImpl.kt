@@ -1,99 +1,119 @@
 package com.example.musicwithyou.data.repository
 
-import android.app.Application
-import com.example.musicwithyou.R
 import com.example.musicwithyou.data.local.room.dao.PlaylistDao
-import com.example.musicwithyou.data.local.room.models.PlaylistEntity
+import com.example.musicwithyou.data.local.room.models.SongPlaylistCrossRef
 import com.example.musicwithyou.data.mapper.toPlaylist
 import com.example.musicwithyou.data.mapper.toPlaylistEntity
+import com.example.musicwithyou.data.mapper.toSong
+import com.example.musicwithyou.data.mapper.toSongEntity
 import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.domain.repository.PlaylistRepository
 import com.example.musicwithyou.utils.FAVORITE_PLAYLIST_ID
-import com.example.musicwithyou.utils.InvalidTitleException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PlaylistRepositoryImpl @Inject constructor(
     private val playListDao: PlaylistDao,
-    private val application: Application,
 ) : PlaylistRepository {
 
-    override fun getPlaylists(): Flow<List<Playlist>> {
-        return playListDao.getAllPlaylist().map { list ->
-            list.map { playlist -> playlist.toPlaylist() }
+    override suspend fun getPlaylists(): Flow<List<Playlist>> {
+        return playListDao.getPlaylistsWithSongs().map { list ->
+            list.map { playlistWithSongs ->
+                val songs = playlistWithSongs.songs.map { songEntity ->
+                    songEntity.toSong()
+                }
+                val playlistEntity = playlistWithSongs.playlistEntity
+                playlistEntity.toPlaylist(songs = songs)
+            }
         }
     }
 
-    override suspend fun getPlaylist(id: Int): Playlist? {
-        return playListDao.getPlaylistById(id)?.toPlaylist()
+    override suspend fun getPlaylist(id: Long): Playlist? {
+        val playlistWithSongs = playListDao.getPlaylistWithSongsById(id) ?: return null
+        val songs = playlistWithSongs.songs.map {
+            it.toSong()
+        }
+        val playlistEntity = playlistWithSongs.playlistEntity
+        return playlistEntity.toPlaylist(songs = songs)
+    }
+
+    override suspend fun moveSong(playlist: Playlist, from: Int, to: Int) {
+        playListDao.move(playlist.id, from, to)
     }
 
     override suspend fun createPlaylist(playlist: Playlist) {
         val playlistEntity = playlist.toPlaylistEntity()
-        playListDao.insert(playlistEntity)
+        val songs = playlist.songs.map { song ->
+            song.toSongEntity()
+        }
+        playListDao.createPlaylist(playlistEntity, songs)
     }
 
     override suspend fun updatePlaylist(playlist: Playlist) {
         if (playlist.isDefault) {
             return
         }
-        if (playlist.title.isBlank() && playlist.title.isEmpty()) {
-            throw InvalidTitleException
-        }
         val playlistEntity = playlist.toPlaylistEntity()
-        playListDao.update(playlistEntity)
+        playListDao.updatePlaylist(playlistEntity)
     }
 
     override suspend fun deletePlaylist(playlist: Playlist) {
         if (playlist.isDefault) {
             return
         }
-        playListDao.delete(playlist.id)
+        playListDao.deletePlaylist(playlist.id)
     }
 
-    override suspend fun addSongsToPlaylist(songIds: List<Long>, playlist: Playlist) {
-        val newSongIds = playlist.songIds.toMutableList()
-        newSongIds.removeAll(songIds)
-        newSongIds.addAll(songIds)
-        val updatedPlaylistEntity = playlist.copy(songIds = newSongIds).toPlaylistEntity()
-        playListDao.update(updatedPlaylistEntity)
-    }
-
-    override suspend fun addSongsToFavoritePlaylist(songIds: List<Long>) {
-        val favoritePlaylist = playListDao.getPlaylistById(
-            FAVORITE_PLAYLIST_ID
-        )
-        if (favoritePlaylist == null) {
-            playListDao.insert(
-                PlaylistEntity(
-                    id = FAVORITE_PLAYLIST_ID,
-                    title = application.getString(R.string.favorites_playlist_title),
-                    createdTimeStamp = System.currentTimeMillis(),
-                    isDefault = false,
-                    iconId = R.drawable.is_favorite,
-                    songIds = songIds
-                )
+    override suspend fun addSongsToPlaylist(songs: List<Song>, playlist: Playlist) {
+        val playlistWithSongs = playListDao.getPlaylistWithSongsById(playlist.id) ?: return
+        val refs = songs.map {
+            SongPlaylistCrossRef(
+                songId = it.id,
+                playlistId = playlistWithSongs.playlistEntity.id,
             )
-        } else {
-            addSongsToPlaylist(songIds, favoritePlaylist.toPlaylist())
+        }
+        playListDao.insertSongPlaylistCrossRefs(refs)
+    }
+
+    override suspend fun getFavoritePlaylistSongs(): Flow<List<Song>> {
+        return playListDao.getPlaylistWithSongsByIdFlow(FAVORITE_PLAYLIST_ID).map {
+            it?.songs?.map { songEntity ->
+                songEntity.toSong()
+            } ?: emptyList()
         }
 
     }
 
-    override suspend fun deleteSongsFromFavoritePlaylist(songIds: List<Long>) {
-        val favoritePlaylist = playListDao.getPlaylistById(
+    override suspend fun addSongsToFavoritePlaylist(songs: List<Song>) {
+        val favoritePlaylist = playListDao.getPlaylistWithSongsById(
+            FAVORITE_PLAYLIST_ID
+        )
+        val crossRef = songs.map {
+            SongPlaylistCrossRef(
+                it.id,
+                FAVORITE_PLAYLIST_ID
+            )
+        }
+        playListDao.insertSongPlaylistCrossRefs(crossRef)
+
+    }
+
+    override suspend fun deleteSongsFromFavoritePlaylist(songs: List<Song>) {
+        val favoritePlaylistWithSongs = playListDao.getPlaylistWithSongsById(
             FAVORITE_PLAYLIST_ID
         ) ?: return
-        deleteSongsFromPlaylist(songIds, favoritePlaylist.toPlaylist())
+        val playlistSongs = favoritePlaylistWithSongs.songs.map { it.toSong() }
+        val playlist = favoritePlaylistWithSongs.playlistEntity.toPlaylist(playlistSongs)
+        deleteSongsFromPlaylist(songs, playlist)
     }
 
-    override suspend fun deleteSongsFromPlaylist(songIds: List<Long>, playlist: Playlist) {
-        val newSongIds = playlist.songIds.toMutableList()
-        newSongIds.removeAll(songIds)
-        val updatedPlaylistEntity = playlist.copy(songIds = newSongIds).toPlaylistEntity()
-        playListDao.update(updatedPlaylistEntity)
+    override suspend fun deleteSongsFromPlaylist(songs: List<Song>, playlist: Playlist) {
+        playListDao.getPlaylistWithSongsById(playlist.id) ?: return
+        songs.forEach {
+            playListDao.deleteSongPlaylistRefById(playlist.id, it.id)
+        }
     }
-
 
 }
