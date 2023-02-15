@@ -18,13 +18,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.Screen
-import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
@@ -37,25 +37,26 @@ import kotlinx.coroutines.launch
 fun PlayingNowScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    playingNowViewModel: PlayingNowViewModel = hiltViewModel(),
 ) {
 
     val currentQueue = mainViewModel.songQueue.value
 
     val currentSong = mainViewModel.currentPlayingSong.value
 
-    val modalBottomSheetState = rememberModalBottomSheetState(
+    val isCurrentSongFavorite = mainViewModel.favoriteSongs.contains(currentSong)
+
+    val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
 
-    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetScope = rememberCoroutineScope()
 
     val sheetInitialContent: @Composable (() -> Unit) = { Text(EMPTY_STRING) }
 
     var customSheetContent by remember { mutableStateOf(sheetInitialContent) }
 
     val songProgress by animateFloatAsState(
-        targetValue = mainViewModel.currentSongProgress.value
+        targetValue = mainViewModel.currentSongProgress
     )
 
 
@@ -64,7 +65,7 @@ fun PlayingNowScreen(
             sheetContent = {
                 customSheetContent()
             },
-            sheetState = modalBottomSheetState
+            sheetState = bottomSheetState
         ) {
             Column(
                 modifier = Modifier
@@ -126,7 +127,10 @@ fun PlayingNowScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.isnt_favorite),
+                        painter = painterResource(
+                            id = if (isCurrentSongFavorite) R.drawable.is_favorite
+                            else R.drawable.isnt_favorite
+                        ),
                         contentDescription = stringResource(id = R.string.close_current_playing_desc),
                         modifier = Modifier
                             .weight(0.1f)
@@ -134,7 +138,7 @@ fun PlayingNowScreen(
                             .padding(top = 5.dp)
                             .size(25.dp)
                             .clickable {
-                                //TODO add to favorites playlist
+                                mainViewModel.changeFavoriteState(currentSong)
                             }
                     )
                     Spacer(modifier = Modifier.width(15.dp))
@@ -167,7 +171,7 @@ fun PlayingNowScreen(
                             .padding(top = 5.dp)
                             .size(25.dp)
                             .clickable {
-                                coroutineScope.launch {
+                                bottomSheetScope.launch {
                                     customSheetContent = {
                                         SongActionsSheetContent(
                                             song = currentSong,
@@ -175,7 +179,33 @@ fun PlayingNowScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_playlist),
                                                     itemClicked = {
-                                                        //Todo Launch new sheet content with playlists
+                                                        customSheetContent = {
+                                                            AddToPlaylistSheetContent(
+                                                                modifier = Modifier
+                                                                    .fillMaxHeight(0.5f),
+                                                                playlists = mainViewModel.playlists,
+                                                                onCreateNewPlaylist = {
+                                                                    mainViewModel.onShowCreatePlaylistDialog(
+                                                                        listOf(currentSong)
+                                                                    )
+                                                                    bottomSheetScope.launch {
+                                                                        bottomSheetState.hide()
+                                                                    }
+                                                                },
+                                                                onPlaylistClick = {
+                                                                    mainViewModel.addToPlaylist(
+                                                                        listOf(currentSong),
+                                                                        it
+                                                                    )
+                                                                    bottomSheetScope.launch {
+                                                                        bottomSheetState.hide()
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                        bottomSheetScope.launch {
+                                                            bottomSheetState.show()
+                                                        }
                                                     },
                                                     iconId = R.drawable.add_to_playlist
                                                 ),
@@ -196,7 +226,7 @@ fun PlayingNowScreen(
                                             )
                                         )
                                     }
-                                    modalBottomSheetState.show()
+                                    bottomSheetState.show()
                                 }
                             }
                     )

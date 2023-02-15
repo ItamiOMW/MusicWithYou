@@ -9,52 +9,57 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.musicwithyou.R
-import com.example.musicwithyou.presentation.utils.NavigationItem
-
+import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.presentation.utils.ActionItem
 
 @Composable
-fun Drawer(
-    items: List<NavigationItem>,
-    onItemClick: (NavigationItem) -> Unit
+fun PlaylistActionsSheetContent(
+    playlist: Playlist,
+    actionItems: List<ActionItem>
 ) {
-    Column {
-        Box(modifier = Modifier
+
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp, top = 60.dp, bottom = 30.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.secondary
-            )
-        }
-        Divider(modifier = Modifier.fillMaxWidth(), )
+            .wrapContentHeight()
+    ) {
+        Text(
+            text = playlist.title,
+            style = MaterialTheme.typography.subtitle1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colors.secondary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp, start = 10.dp, end = 10.dp)
+        )
+        Divider(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp))
         LazyColumn() {
-            items(items) {item ->
+            items(items = actionItems) { actionItem ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            onItemClick(item)
+                            actionItem.itemClicked()
                         }
-                        .padding(16.dp)
+                        .padding(start = 10.dp, end = 10.dp, top = 15.dp, bottom = 15.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = item.iconId),
+                        painter = painterResource(id = actionItem.iconId),
                         contentDescription = stringResource(id = R.string.icon_desc),
                         modifier = Modifier.size(23.dp)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.body2,
+                        text = actionItem.actionTitle,
+                        style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondary,
                         modifier = Modifier.weight(1f)
                     )
@@ -62,4 +67,5 @@ fun Drawer(
             }
         }
     }
+
 }

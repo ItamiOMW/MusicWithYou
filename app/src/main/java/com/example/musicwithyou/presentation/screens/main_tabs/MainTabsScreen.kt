@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
-import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsViewModel
 import com.example.musicwithyou.presentation.screens.main_tabs.artists.ArtistsPagerScreen

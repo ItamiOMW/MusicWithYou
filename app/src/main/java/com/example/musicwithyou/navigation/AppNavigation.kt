@@ -4,7 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.screens.current_queue.CurrentQueueScreen
 import com.example.musicwithyou.presentation.screens.playing_now.PlayingNowScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.MainTabsScreen

@@ -3,6 +3,7 @@ package com.example.musicwithyou.di
 import android.content.Context
 import com.example.musicwithyou.data.local.content_resolver.ContentResolverHelper
 import com.example.musicwithyou.data.local.content_resolver.SongContentResolver
+import com.example.musicwithyou.data.repository.PlaylistRepositoryImpl
 import com.example.musicwithyou.data.repository.SongRepositoryImpl
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.domain.repository.PlaylistRepository
@@ -29,14 +30,14 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSongRepository(
-        songRepository: SongRepositoryImpl,
-    ): SongRepository = songRepository
+        songRepositoryImpl: SongRepositoryImpl,
+    ): SongRepository = songRepositoryImpl
 
     @Provides
     @Singleton
     fun providePlaylistRepository(
-        playListRepository: PlaylistRepository,
-    ): PlaylistRepository = playListRepository
+        playlistRepositoryImpl: PlaylistRepositoryImpl,
+    ): PlaylistRepository = playlistRepositoryImpl
 
     @Provides
     @Singleton

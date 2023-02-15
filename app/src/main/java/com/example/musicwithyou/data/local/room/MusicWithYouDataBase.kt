@@ -12,15 +12,24 @@ import com.example.musicwithyou.data.local.room.dao.PlaylistDao
 import com.example.musicwithyou.data.local.room.dao.SongDao
 import com.example.musicwithyou.data.local.room.models.PlaylistEntity
 import com.example.musicwithyou.data.local.room.models.SongEntity
+import com.example.musicwithyou.data.local.room.models.SongPlaylistCrossRef
+import com.example.musicwithyou.data.local.room.models.SortedSongPlaylistCrossRef
 import com.example.musicwithyou.utils.FAVORITE_PLAYLIST_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [PlaylistEntity::class, SongEntity::class],
+    entities = [
+        PlaylistEntity::class,
+        SongEntity::class,
+        SongPlaylistCrossRef::class,
+    ],
     exportSchema = false,
-    version = 2
+    version = 2,
+    views = [
+        SortedSongPlaylistCrossRef::class
+    ]
 )
 @TypeConverters(
     DatabaseTypeConverter::class
@@ -55,15 +64,15 @@ abstract class MusicWithYouDataBase : RoomDatabase() {
                     super.onCreate(db)
                     instance?.let {
                         CoroutineScope(Dispatchers.IO).launch {
-                            instance?.playListDao()?.insert(
+                            instance?.playListDao()?.createPlaylist(
                                 PlaylistEntity(
                                     id = FAVORITE_PLAYLIST_ID,
                                     title = application.getString(R.string.favorites_playlist_title),
                                     createdTimeStamp = System.currentTimeMillis(),
-                                    isDefault = false,
+                                    isDefault = true,
                                     iconId = R.drawable.is_favorite,
-                                    songIds = emptyList()
-                                )
+                                ),
+                                emptyList()
                             )
                         }
                     }

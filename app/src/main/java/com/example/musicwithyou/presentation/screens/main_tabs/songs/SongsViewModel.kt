@@ -32,16 +32,6 @@ class SongsViewModel @Inject constructor(
             is SongsEvent.RefreshSongs -> {
                 getSongs()
             }
-            is SongsEvent.DeleteSong -> {
-
-            }
-            is SongsEvent.AddToPlaylist -> {
-
-            }
-            is SongsEvent.CreateNewPlaylist -> {
-
-            }
-
             is SongsEvent.OrderChange -> {
                 if (state.songOrder::class == event.songOrder::class &&
                     state.songOrder.orderType == event.songOrder.orderType

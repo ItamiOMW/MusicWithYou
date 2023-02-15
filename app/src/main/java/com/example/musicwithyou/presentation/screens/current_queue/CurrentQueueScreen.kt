@@ -17,16 +17,16 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
-import com.example.musicwithyou.presentation.MainViewModel
+import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
-import com.example.musicwithyou.presentation.components.SongCard
+import com.example.musicwithyou.presentation.components.SongItem
 import com.example.musicwithyou.presentation.components.drag_drop.ReorderableItem
 import com.example.musicwithyou.presentation.components.drag_drop.detectReorderAfterLongPress
 import com.example.musicwithyou.presentation.components.drag_drop.rememberReorderableLazyListState
 import com.example.musicwithyou.presentation.components.drag_drop.reorderable
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 fun CurrentQueueScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    currentQueueViewModel: CurrentQueueViewModel = hiltViewModel(),
 ) {
     val reordableState = rememberReorderableLazyListState(onMove = { from, to ->
         mainViewModel.moveSong(from.index, to.index)
@@ -45,11 +44,11 @@ fun CurrentQueueScreen(
 
     val currentQueue = mainViewModel.songQueue.value
 
-    val modalBottomSheetState = rememberModalBottomSheetState(
+    val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
 
-    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetScope = rememberCoroutineScope()
 
     val sheetInitialContent: @Composable (() -> Unit) = { Text(EMPTY_STRING) }
 
@@ -59,7 +58,7 @@ fun CurrentQueueScreen(
         sheetContent = {
             customSheetContent()
         },
-        sheetState = modalBottomSheetState
+        sheetState = bottomSheetState
     ) {
         Column(
             modifier = Modifier
@@ -98,7 +97,7 @@ fun CurrentQueueScreen(
                         key = song.id,
                     ) { isDragging ->
                         val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
-                        SongCard(
+                        SongItem(
                             song = song,
                             isSongPlaying = mainViewModel.isSongPlaying.value,
                             isCurrentSong = song == mainViewModel.currentPlayingSong.value,
@@ -116,7 +115,7 @@ fun CurrentQueueScreen(
                                     )
                                 },
                             onOptionsClicked = {
-                                coroutineScope.launch {
+                                bottomSheetScope.launch {
                                     customSheetContent = {
                                         SongActionsSheetContent(
                                             song = song,
@@ -124,7 +123,33 @@ fun CurrentQueueScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.add_to_playlist),
                                                     itemClicked = {
-                                                        //Todo Launch new sheet content with playlists
+                                                        customSheetContent = {
+                                                            AddToPlaylistSheetContent(
+                                                                modifier = Modifier
+                                                                    .fillMaxHeight(0.5f),
+                                                                playlists = mainViewModel.playlists,
+                                                                onCreateNewPlaylist = {
+                                                                    mainViewModel.onShowCreatePlaylistDialog(
+                                                                        listOf(song)
+                                                                    )
+                                                                    bottomSheetScope.launch {
+                                                                        bottomSheetState.hide()
+                                                                    }
+                                                                },
+                                                                onPlaylistClick = {
+                                                                    mainViewModel.addToPlaylist(
+                                                                        listOf(song),
+                                                                        it
+                                                                    )
+                                                                    bottomSheetScope.launch {
+                                                                        bottomSheetState.hide()
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                        bottomSheetScope.launch {
+                                                            bottomSheetState.show()
+                                                        }
                                                     },
                                                     iconId = R.drawable.add_to_playlist
                                                 ),
@@ -138,9 +163,9 @@ fun CurrentQueueScreen(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.delete_from_queue),
                                                     itemClicked = {
-                                                        coroutineScope.launch {
+                                                        bottomSheetScope.launch {
                                                             mainViewModel.deleteFromQueue(song)
-                                                            modalBottomSheetState.hide()
+                                                            bottomSheetState.hide()
                                                         }
                                                     },
                                                     iconId = R.drawable.remove
@@ -155,7 +180,7 @@ fun CurrentQueueScreen(
                                             )
                                         )
                                     }
-                                    modalBottomSheetState.show()
+                                    bottomSheetState.show()
                                 }
                             }
                         )

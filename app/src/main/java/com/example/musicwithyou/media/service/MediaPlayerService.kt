@@ -58,8 +58,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
     private var currentPlayingMedia: MediaMetadataCompat? = null
 
-    var isForegroundService: Boolean = false
-        private set
+    private var isForegroundService: Boolean = false
 
     companion object {
 
@@ -99,9 +98,7 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
 
         mediaSessionConnector = MediaSessionConnector(mediaSession).apply {
             mediaSession.setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                        or MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS
-                        or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS
             )
             setPlaybackPreparer(AudioMediaPlayBackPreparer())
             setQueueNavigator(MediaQueueNavigator(mediaSession))
@@ -187,11 +184,30 @@ class MediaPlayerService : MediaBrowserServiceCompat() {
                     ?.let { exoPlayer.addMediaItem(exoPlayer.currentMediaItemIndex + 1, it) }
                 mediaSource.addMedia(metadata, exoPlayer.currentMediaItemIndex + 1)
             }
+            SET_SONGS_AS_NEXT_ACTION -> {
+                val metadataArray = extras?.getParcelableArray(
+                    MEDIA_METADATA_ARRAY_KEY
+                ) as Array<*>? ?: return
+                metadataArray.forEach {
+                    val metadata = it as MediaMetadataCompat
+                    val item = mediaSource.audioMediaMetaData.value.find {
+                        it.description.mediaId == metadata.description.mediaId
+                    }
+                    if (item != null) {
+                        val index = mediaSource.audioMediaMetaData.value.indexOf(item)
+                        exoPlayer.removeMediaItem(index)
+                        mediaSource.deleteMedia(metadata)
+                    }
+                    metadata.description.mediaUri?.let { MediaItem.fromUri(it) }
+                        ?.let { exoPlayer.addMediaItem(exoPlayer.currentMediaItemIndex + 1, it) }
+                    mediaSource.addMedia(metadata, exoPlayer.currentMediaItemIndex + 1)
+                }
+            }
             MOVE_SONG_ACTION -> {
                 val fromIndex = extras?.getInt(MOVE_FROM_KEY) ?: return
                 val toIndex = extras.getInt(MOVE_TO_KEY)
-                mediaSource.moveMedia(fromIndex, toIndex)
                 exoPlayer.moveMediaItem(fromIndex, toIndex)
+                mediaSource.moveMedia(fromIndex, toIndex)
             }
             else -> Unit
         }

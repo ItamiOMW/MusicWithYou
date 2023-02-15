@@ -78,7 +78,6 @@ class MediaPlayerServiceConnection @Inject constructor(
     }
 
     fun playQueue(songs: List<Song>) {
-        songQueue.value = songs.toMutableList()
         mediaSource.loadData(songs)
         mediaBrowser.sendCustomAction(START_MEDIA_PLAY_ACTION, null, null)
     }
@@ -92,8 +91,24 @@ class MediaPlayerServiceConnection @Inject constructor(
         } else {
             if (songQueue.value.contains(song)) {
                 return
-            } else {
-                val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
+            }
+            val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
+            mediaControllerCompat.addQueueItem(descriptionWithExtras)
+        }
+    }
+
+    fun addSongsToQueue(songs: List<Song>) {
+        if (songQueue.value.isEmpty()) {
+            val newList = songQueue.value.toMutableList()
+            newList.addAll(songs)
+            mediaSource.loadData(newList)
+            transportControl.playFromMediaId(songs.first().id.toString(), null)
+        } else {
+            val listOfItemsToAdd = songs.filter {
+                !songQueue.value.contains(it)
+            }
+            listOfItemsToAdd.forEach {
+                val descriptionWithExtras = it.toMediaMetadata().toMediaDescription()
                 mediaControllerCompat.addQueueItem(descriptionWithExtras)
             }
         }
@@ -102,10 +117,9 @@ class MediaPlayerServiceConnection @Inject constructor(
     fun deleteQueueItem(song: Song) {
         if (!songQueue.value.contains(song)) {
             return
-        } else {
-            val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
-            mediaControllerCompat.removeQueueItem(descriptionWithExtras)
         }
+        val descriptionWithExtras = song.toMediaMetadata().toMediaDescription()
+        mediaControllerCompat.removeQueueItem(descriptionWithExtras)
     }
 
     fun playNext(song: Song) {
@@ -124,6 +138,29 @@ class MediaPlayerServiceConnection @Inject constructor(
             SET_SONG_AS_NEXT_ACTION,
             Bundle().apply {
                 putParcelable(MEDIA_METADATA_KEY, metadata)
+            },
+            null
+        )
+    }
+
+    fun playNext(songs: List<Song>) {
+        if (songQueue.value.isEmpty()) {
+            val newList = songQueue.value.toMutableList()
+            newList.addAll(songs)
+            mediaSource.loadData(newList)
+            transportControl.playFromMediaId(songs.first().id.toString(), null)
+            return
+        }
+        val songsToAdd = songs.filter {
+            currentPlayingSong.value != it
+        }
+        val metadataList = songsToAdd.map {
+            it.toMediaMetadata()
+        }.toTypedArray()
+        mediaBrowser.sendCustomAction(
+            SET_SONGS_AS_NEXT_ACTION,
+            Bundle().apply {
+                putParcelableArray(MEDIA_METADATA_ARRAY_KEY, metadataList)
             },
             null
         )

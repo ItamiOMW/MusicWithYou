@@ -1,6 +1,7 @@
 package com.example.musicwithyou.domain.usecase.playlist_usecase
 
 import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,13 +16,17 @@ class PlaylistUseCases @Inject constructor(
     private val getPlaylistsUseCase: GetPlaylistsUseCase,
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val updatePlaylistUseCase: UpdatePlaylistUseCase,
+    private val getFavoritePlaylistSongsUseCase: GetFavoritePlaylistSongsUseCase,
 ) {
 
-    fun getPlaylists(): Flow<List<Playlist>> = getPlaylistsUseCase.invoke()
+    suspend fun getPlaylists(): Flow<List<Playlist>> = getPlaylistsUseCase.invoke()
+
+    suspend fun getFavoritePlaylistSongs(): Flow<List<Song>> =
+        getFavoritePlaylistSongsUseCase.invoke()
 
 
     suspend fun getPlaylist(
-        id: Int,
+        id: Long,
     ): Playlist? = getPlaylistUseCase.invoke(id)
 
 
@@ -41,24 +46,24 @@ class PlaylistUseCases @Inject constructor(
 
 
     suspend fun addSongsToPlaylist(
-        songIds: List<Long>,
+        songs: List<Song>,
         playlist: Playlist,
-    ) = addSongsToPlaylistUseCase.invoke(songIds, playlist)
+    ) = addSongsToPlaylistUseCase.invoke(songs, playlist)
 
 
     suspend fun addSongsToFavoritePlaylist(
-        songIds: List<Long>,
-    ) = addSongsToFavoritePlaylistUseCase.invoke(songIds)
+        songs: List<Song>,
+    ) = addSongsToFavoritePlaylistUseCase.invoke(songs)
 
 
     suspend fun deleteSongsFromFavoritePlaylist(
-        songIds: List<Long>,
-    ) = deleteSongsFromFavoritePlaylistUseCase.invoke(songIds)
+        songs: List<Song>,
+    ) = deleteSongsFromFavoritePlaylistUseCase.invoke(songs)
 
 
     suspend fun deleteSongsFromPlaylist(
-        songIds: List<Long>,
+        songs: List<Song>,
         playlist: Playlist,
-    ) = deleteSongsFromPlaylistUseCase.invoke(songIds, playlist)
+    ) = deleteSongsFromPlaylistUseCase.invoke(songs, playlist)
 
 }

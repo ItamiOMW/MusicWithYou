@@ -1,10 +1,12 @@
 package com.example.musicwithyou.domain.models
 
+import com.example.musicwithyou.utils.UNKNOWN_ID_LONG
+
 data class Playlist(
-    val id: Int,
+    val id: Long = UNKNOWN_ID_LONG,
     val title: String,
-    val songIds: List<Long>,
+    val songs: List<Song>,
     val createdTimeStamp: Long,
     val iconId: Int? = null,
-    val isDefault: Boolean,
+    val isDefault: Boolean = false,
 )

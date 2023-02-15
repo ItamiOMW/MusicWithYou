@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation
+package com.example.musicwithyou.presentation.screens
 
 import android.Manifest
 import android.content.Intent
@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,8 +31,9 @@ import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.AppNavigation
 import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.BottomBarPlayer
-import com.example.musicwithyou.presentation.components.Drawer
-import com.example.musicwithyou.presentation.components.TopBar
+import com.example.musicwithyou.presentation.components.CreatePlaylistDialog
+import com.example.musicwithyou.presentation.components.CustomDrawer
+import com.example.musicwithyou.presentation.components.CustomTopBar
 import com.example.musicwithyou.presentation.ui.theme.MusicWithYouTheme
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -96,6 +98,23 @@ class MainActivity : ComponentActivity() {
                         val scaffoldState = rememberScaffoldState()
 
                         val drawerScope = rememberCoroutineScope()
+
+                        if (mainViewModel.showCreatePlaylistDialog) {
+                            CreatePlaylistDialog(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                                    .clip(RoundedCornerShape(15.dp))
+                                    .border(1.dp, MaterialTheme.colors.secondaryVariant)
+                                ,
+                                onConfirm = { title ->
+                                    mainViewModel.createPlaylist(title)
+                                },
+                                onDismiss = {
+                                    mainViewModel.onDismissCreatePlaylistDialog()
+                                }
+                            )
+                        }
 
                         when (navBackStackEntry?.destination?.route) {
                             Screen.PlayingNowScreen.route -> {
@@ -169,7 +188,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             topBar = {
-                                TopBar(
+                                CustomTopBar(
                                     isVisible = topBarIsVisible,
                                     onNavigationIconClicked = {
                                         drawerScope.launch {
@@ -182,7 +201,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                             drawerContent = {
-                                Drawer(
+                                CustomDrawer(
                                     items = listOf(
                                         //Todo add item for future sections( settings and so on )
                                     ),

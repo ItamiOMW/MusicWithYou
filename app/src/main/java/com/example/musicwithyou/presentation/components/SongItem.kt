@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,14 +23,12 @@ import com.example.musicwithyou.utils.timestampToDuration
 
 
 @Composable
-fun SongCard(
+fun SongItem(
     song: Song,
     onOptionsClicked: (Song) -> Unit,
     modifier: Modifier = Modifier,
     isCurrentSong: Boolean = false,
     isSongPlaying: Boolean = false,
-    backgroundColor: Color = Color.Transparent,
-    secondaryVariantColor: Color = MaterialTheme.colors.surface,
 ) {
 
 
