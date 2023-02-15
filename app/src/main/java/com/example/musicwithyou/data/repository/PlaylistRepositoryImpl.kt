@@ -30,13 +30,11 @@ class PlaylistRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPlaylist(id: Long): Playlist? {
-        val playlistWithSongs = playListDao.getPlaylistWithSongsById(id) ?: return null
-        val songs = playlistWithSongs.songs.map {
-            it.toSong()
+    override suspend fun getPlaylist(id: Long): Flow<Playlist?> {
+        return playListDao.getPlaylistWithSongsByIdFlow(id).map {
+            val songs = it?.songs?.map { it.toSong() } ?: emptyList()
+            it?.playlistEntity?.toPlaylist(songs)
         }
-        val playlistEntity = playlistWithSongs.playlistEntity
-        return playlistEntity.toPlaylist(songs = songs)
     }
 
     override suspend fun moveSong(playlist: Playlist, from: Int, to: Int) {
@@ -68,10 +66,12 @@ class PlaylistRepositoryImpl @Inject constructor(
 
     override suspend fun addSongsToPlaylist(songs: List<Song>, playlist: Playlist) {
         val playlistWithSongs = playListDao.getPlaylistWithSongsById(playlist.id) ?: return
+        var lastIndex = playlistWithSongs.songs.lastIndex
         val refs = songs.map {
             SongPlaylistCrossRef(
                 songId = it.id,
                 playlistId = playlistWithSongs.playlistEntity.id,
+                position = ++lastIndex
             )
         }
         playListDao.insertSongPlaylistCrossRefs(refs)

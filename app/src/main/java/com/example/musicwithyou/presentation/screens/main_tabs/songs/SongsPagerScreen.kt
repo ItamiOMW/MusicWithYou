@@ -94,7 +94,7 @@ fun SongsPagerScreen(
                             .padding(end = 5.dp)
                     )
                     BasicText(
-                        text = stringResource(R.string.shuffle),
+                        text = "${stringResource(R.string.shuffle)}(${songs.size})",
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )

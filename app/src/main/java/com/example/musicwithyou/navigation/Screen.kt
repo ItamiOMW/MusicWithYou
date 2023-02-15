@@ -8,6 +8,8 @@ sealed class Screen(val route: String) {
 
     object CurrentQueueScreen : Screen(CURRENT_QUEUE_SCREEN_ROUTE)
 
+    object PlaylistInfoScreen : Screen(PLAYLIST_INFO_SCREEN_ROUTE)
+
 
     companion object {
 
@@ -16,6 +18,10 @@ sealed class Screen(val route: String) {
         private const val CURRENT_PLAYING_SONG_SCREEN_ROUTE = "playing_now"
 
         private const val CURRENT_QUEUE_SCREEN_ROUTE = "current_queue"
+
+        private const val PLAYLIST_INFO_SCREEN_ROUTE = "playlist_info"
+
+        const val PLAYLIST_ID_ARG = "playlistId"
 
     }
 
