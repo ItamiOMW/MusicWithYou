@@ -65,4 +65,6 @@
     <string name="rename">Rename</string>
     <string name="create_new_playlist">Create new playlist</string>
     <string name="item_icon_desc">Icon of Item</string>
+    <string name="close_playlist_info_desc">Close playlist info screen</string>
+    <string name="delete_from_playlist">Delete from playlist</string>
 </resources>

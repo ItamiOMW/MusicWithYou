@@ -4,24 +4,25 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.room.Delete
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
+import com.example.musicwithyou.navigation.Screen
+import com.example.musicwithyou.navigation.Screen.Companion.PLAYLIST_ID_ARG
 import com.example.musicwithyou.presentation.components.*
 import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
@@ -90,11 +91,35 @@ fun PlaylistsPagerScreen(
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
+           Row(
+               modifier = Modifier.fillMaxWidth(),
+               horizontalArrangement = Arrangement.SpaceBetween
+           ) {
+               Text(
+                   text = "${stringResource(R.string.playlists)}(${playlists.size})",
+                   style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
+                   modifier = Modifier.align(Alignment.CenterVertically)
+               )
+               Icon(
+                   painter = painterResource(
+                       id = R.drawable.add
+                   ),
+                   contentDescription = stringResource(R.string.songs_picker_desc),
+                   tint = MaterialTheme.colors.secondaryVariant,
+                   modifier = Modifier
+                       .size(25.dp)
+                       .align(Alignment.CenterVertically)
+                       .clickable {
+                           mainViewModel.onShowCreatePlaylistDialog(
+                               emptyList()
+                           )
+                       }
+               )
+           }
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(playlists, key = { it.id }) { playlist ->
-
                     PlaylistItem(
                         playlist = playlist,
                         modifier = Modifier
@@ -105,7 +130,19 @@ fun PlaylistsPagerScreen(
                             .background(Color.Transparent)
                             .animateItemPlacement(animationSpec = tween(500))
                             .clickable {
-                                //Todo launch PlaylistDetailScreen
+                                navController.navigate(
+                                    route = Screen.PlaylistInfoScreen.route +
+                                            "?$PLAYLIST_ID_ARG=${playlist.id}",
+                                ) {
+                                    popUpTo(
+                                        id = navController.currentBackStackEntry?.destination?.id
+                                            ?: navController.graph.findStartDestination().id
+                                    ) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             },
                         onOptionsClicked = {
                             bottomSheetScope.launch {

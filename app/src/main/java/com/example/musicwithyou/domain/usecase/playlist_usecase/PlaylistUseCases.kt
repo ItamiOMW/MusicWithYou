@@ -17,6 +17,7 @@ class PlaylistUseCases @Inject constructor(
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val updatePlaylistUseCase: UpdatePlaylistUseCase,
     private val getFavoritePlaylistSongsUseCase: GetFavoritePlaylistSongsUseCase,
+    private val moveSongUseCase: MoveSongUseCase
 ) {
 
     suspend fun getPlaylists(): Flow<List<Playlist>> = getPlaylistsUseCase.invoke()
@@ -24,10 +25,15 @@ class PlaylistUseCases @Inject constructor(
     suspend fun getFavoritePlaylistSongs(): Flow<List<Song>> =
         getFavoritePlaylistSongsUseCase.invoke()
 
+    suspend fun moveSong(
+        from: Int,
+        to: Int,
+        playlist: Playlist,
+    ) = moveSongUseCase.invoke(from, to, playlist)
 
     suspend fun getPlaylist(
         id: Long,
-    ): Playlist? = getPlaylistUseCase.invoke(id)
+    ): Flow<Playlist?> = getPlaylistUseCase.invoke(id)
 
 
     suspend fun createPlaylist(

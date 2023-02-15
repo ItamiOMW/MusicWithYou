@@ -43,7 +43,7 @@ interface PlaylistDao {
        WHERE playlistId = :playlistId AND position BETWEEN MIN(:from, :to) and MAX(:from, :to)
     """
     )
-    fun move(playlistId: Long, from: Int, to: Int)
+    suspend fun move(playlistId: Long, from: Int, to: Int)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSongPlaylistCrossRefs(

@@ -8,7 +8,7 @@ interface PlaylistRepository {
 
     suspend fun getPlaylists(): Flow<List<Playlist>>
 
-    suspend fun getPlaylist(id: Long): Playlist?
+    suspend fun getPlaylist(id: Long): Flow<Playlist?>
 
     suspend fun moveSong(playlist: Playlist, from: Int, to: Int)
 

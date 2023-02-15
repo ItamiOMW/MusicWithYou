@@ -105,8 +105,7 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                     .padding(10.dp)
                                     .clip(RoundedCornerShape(15.dp))
-                                    .border(1.dp, MaterialTheme.colors.secondaryVariant)
-                                ,
+                                    .border(1.dp, MaterialTheme.colors.secondaryVariant),
                                 onConfirm = { title ->
                                     mainViewModel.createPlaylist(title)
                                 },
@@ -117,6 +116,10 @@ class MainActivity : ComponentActivity() {
                         }
 
                         when (navBackStackEntry?.destination?.route) {
+                            Screen.MainTabsScreen.route -> {
+                                bottomBarIsVisible = true
+                                topBarIsVisible = true
+                            }
                             Screen.PlayingNowScreen.route -> {
                                 bottomBarIsVisible = false
                                 topBarIsVisible = false
@@ -127,7 +130,7 @@ class MainActivity : ComponentActivity() {
                             }
                             else -> {
                                 bottomBarIsVisible = true
-                                topBarIsVisible = true
+                                topBarIsVisible = false
                             }
                         }
 
