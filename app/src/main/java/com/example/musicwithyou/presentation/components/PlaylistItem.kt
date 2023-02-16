@@ -41,8 +41,8 @@ fun PlaylistItem(
             AsyncImage(
                 model = playlist.iconId,
                 contentDescription = stringResource(id = R.string.song_image_desc),
-                modifier = Modifier.fillMaxSize(),
-                error = painterResource(id = R.drawable.unknown_song)
+                modifier = Modifier.size(55.dp),
+                error = painterResource(id = R.drawable.playlist),
             )
         }
         Spacer(modifier = Modifier.width(8.dp))

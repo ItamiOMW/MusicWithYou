@@ -35,7 +35,7 @@ fun CustomItem(
             AsyncImage(
                 model = iconId,
                 contentDescription = stringResource(R.string.item_icon_desc),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.size(55.dp),
                 error = painterResource(id = R.drawable.unknown_song)
             )
         }

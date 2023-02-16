@@ -5,17 +5,17 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.WorkerThread
-import com.example.musicwithyou.domain.models.Song
+import com.example.musicwithyou.data.local.room.models.SongEntity
 import javax.inject.Inject
 
 class SongContentResolver @Inject constructor(
     private val application: Application,
-) : ContentResolverHelper<Song> {
+) : ContentResolverHelper<SongEntity> {
 
     @WorkerThread
-    override fun getData(): List<Song> {
+    override fun getData(): List<SongEntity> {
 
-        val songList = mutableListOf<Song>()
+        val songList = mutableListOf<SongEntity>()
 
         val cursor = application.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -67,7 +67,7 @@ class SongContentResolver @Inject constructor(
                             Uri.parse("content://media/external/audio/albumart"),
                             albumId.toString()
                         )
-                        val song = Song(
+                        val song = SongEntity(
                             id,
                             title,
                             songUri.toString(),
