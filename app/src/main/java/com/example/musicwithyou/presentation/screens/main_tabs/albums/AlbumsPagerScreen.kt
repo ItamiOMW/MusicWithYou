@@ -1,6 +1,7 @@
 package com.example.musicwithyou.presentation.screens.main_tabs.albums
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
+import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.AlbumActionsSheetContent
 import com.example.musicwithyou.presentation.components.AlbumItem
@@ -82,6 +85,21 @@ fun AlbumsPagerScreen(
                                     MaterialTheme.colors.secondaryVariant.copy(alpha = 0.3f),
                                     RoundedCornerShape(15.dp)
                                 )
+                                .clickable {
+                                    navController.navigate(
+                                        route = Screen.AlbumInfoScreen.route +
+                                                "?${Screen.ALBUM_ID_ARG}=${album.id}",
+                                    ) {
+                                        popUpTo(
+                                            id = navController.currentBackStackEntry?.destination?.id
+                                                ?: navController.graph.findStartDestination().id
+                                        ) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
                                 .padding(10.dp),
                             imageSize = 150.dp,
                             onOptionsClicked = {

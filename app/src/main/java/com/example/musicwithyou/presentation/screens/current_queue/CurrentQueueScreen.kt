@@ -1,7 +1,6 @@
 package com.example.musicwithyou.presentation.screens.current_queue
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,7 +31,7 @@ import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CurrentQueueScreen(
     navController: NavController,

@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
         AlbumEntity::class
     ],
     exportSchema = false,
-    version = 3,
+    version = 4,
     views = [
         SortedSongPlaylistCrossRef::class
     ]

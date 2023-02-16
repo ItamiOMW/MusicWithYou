@@ -7,10 +7,10 @@ import com.example.musicwithyou.data.local.room.models.SongEntity
 interface SongDao {
 
     @Query("SELECT * FROM song_table")
-    fun getAllSongs(): List<SongEntity>
+    suspend fun getAllSongs(): List<SongEntity>
 
     @Query("SELECT * FROM song_table WHERE id = :id")
-    fun getSongById(id: Long): SongEntity?
+    suspend fun getSongById(id: Long): SongEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(songList: List<SongEntity>)

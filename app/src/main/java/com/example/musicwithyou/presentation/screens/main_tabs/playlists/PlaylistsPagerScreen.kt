@@ -91,31 +91,31 @@ fun PlaylistsPagerScreen(
                 .fillMaxSize()
                 .padding(15.dp)
         ) {
-           Row(
-               modifier = Modifier.fillMaxWidth(),
-               horizontalArrangement = Arrangement.SpaceBetween
-           ) {
-               Text(
-                   text = "${stringResource(R.string.playlists)}(${playlists.size})",
-                   style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
-                   modifier = Modifier.align(Alignment.CenterVertically)
-               )
-               Icon(
-                   painter = painterResource(
-                       id = R.drawable.add
-                   ),
-                   contentDescription = stringResource(R.string.songs_picker_desc),
-                   tint = MaterialTheme.colors.secondaryVariant,
-                   modifier = Modifier
-                       .size(25.dp)
-                       .align(Alignment.CenterVertically)
-                       .clickable {
-                           mainViewModel.onShowCreatePlaylistDialog(
-                               emptyList()
-                           )
-                       }
-               )
-           }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.playlists_count, playlists.size),
+                    style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.add
+                    ),
+                    contentDescription = stringResource(R.string.songs_picker_desc),
+                    tint = MaterialTheme.colors.secondaryVariant,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable {
+                            mainViewModel.onShowCreatePlaylistDialog(
+                                emptyList()
+                            )
+                        }
+                )
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {

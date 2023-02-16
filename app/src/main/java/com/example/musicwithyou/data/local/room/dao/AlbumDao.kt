@@ -8,10 +8,10 @@ interface AlbumDao {
 
     @Transaction
     @Query("SELECT * FROM album_table")
-    fun getAlbums(): List<AlbumEntity>
+    suspend fun getAlbums(): List<AlbumEntity>
 
     @Query("SELECT * FROM album_table WHERE id = :id LIMIT 1")
-    fun getAlbumWithSongsById(id: Long): AlbumEntity?
+    suspend fun getAlbumWithSongsById(id: Long): AlbumEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(albums: List<AlbumEntity>)

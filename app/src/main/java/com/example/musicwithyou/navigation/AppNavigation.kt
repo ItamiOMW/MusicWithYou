@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.musicwithyou.navigation.Screen.Companion.ALBUM_ID_ARG
 import com.example.musicwithyou.navigation.Screen.Companion.PLAYLIST_ID_ARG
 import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.album_info.AlbumInfoScreen
 import com.example.musicwithyou.presentation.screens.current_queue.CurrentQueueScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.MainTabsScreen
 import com.example.musicwithyou.presentation.screens.playing_now.PlayingNowScreen
@@ -107,6 +109,37 @@ fun AppNavigation(
             }
         ) {
             PlaylistInfoScreen(navController = navController, mainViewModel = mainViewModel)
+        }
+        composable(
+            route = Screen.AlbumInfoScreen.route + "?${ALBUM_ID_ARG}={$ALBUM_ID_ARG}",
+            arguments = listOf(
+                navArgument(ALBUM_ID_ARG) {
+                    type = NavType.LongType
+                    nullable = false
+                }
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it }, animationSpec = tween(500)
+                ).plus(fadeIn(tween(500)))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it }, animationSpec = tween(500)
+                ).plus(fadeOut(tween(500)))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it }, animationSpec = tween(500)
+                ).plus(fadeIn(tween(500)))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it }, animationSpec = tween(500)
+                ).plus(fadeOut(tween(500)))
+            }
+        ) {
+            AlbumInfoScreen(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }

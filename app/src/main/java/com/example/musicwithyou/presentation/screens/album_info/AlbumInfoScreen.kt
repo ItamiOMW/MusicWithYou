@@ -1,4 +1,4 @@
-package com.example.musicwithyou.presentation.screens.main_tabs.songs
+package com.example.musicwithyou.presentation.screens.album_info
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -17,40 +17,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
-import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.components.SongItem
-import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSectionSheetContent
+import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun SongsPagerScreen(
+fun AlbumInfoScreen(
     navController: NavController,
-    songsViewModel: SongsViewModel,
     mainViewModel: MainViewModel,
+    albumInfoViewModel: AlbumInfoViewModel = hiltViewModel(),
 ) {
 
-    //States
-    val songs = songsViewModel.state.songs
-    val songOrder = songsViewModel.state.songOrder
-    val swipeRefreshState = rememberSwipeRefreshState(
-        isRefreshing = songsViewModel.state.isRefreshing
-    )
-
+    val album = albumInfoViewModel.album
 
     val bottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
+        initialValue = ModalBottomSheetValue.Hidden
     )
 
     val bottomSheetScope = rememberCoroutineScope()
@@ -59,27 +53,88 @@ fun SongsPagerScreen(
 
     var customSheetContent by remember { mutableStateOf(sheetInitialContent) }
 
-
-    ModalBottomSheetLayout(
-        sheetContent = {
-            customSheetContent()
-        },
-        sheetState = bottomSheetState,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp)
+    if (album != null) {
+        ModalBottomSheetLayout(
+            sheetContent = {
+                customSheetContent()
+            },
+            sheetState = bottomSheetState
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp)
             ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_left),
+                        contentDescription = stringResource(R.string.close_playlist_info_desc),
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .size(35.dp)
+                            .clickable {
+                                navController.popBackStack()
+                            }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(130.dp)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        AsyncImage(
+                            model = album.imageUri,
+                            contentDescription = stringResource(id = R.string.image_of_album_desc),
+                            error = painterResource(id = R.drawable.album),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .fillMaxSize(0.9f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = R.string.album_info,
+                                album.songsCount,
+                                album.year
+                            ),
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.secondaryVariant
+                        )
+                        Text(
+                            text = album.title,
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.secondary,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = album.artistName,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.secondaryVariant,
+                            overflow = TextOverflow.Ellipsis,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                //Todo go to artist info screen
+                            }
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier
+                        .align(Alignment.Start)
                         .clip(RoundedCornerShape(15.dp))
                         .clickable {
-                            mainViewModel.playShuffled(songs)
+                            mainViewModel.playShuffled(album.songs)
                         }
                 ) {
                     Icon(
@@ -94,69 +149,15 @@ fun SongsPagerScreen(
                             .padding(end = 5.dp)
                     )
                     BasicText(
-                        text = stringResource(R.string.shuffle, songs.size),
+                        text = stringResource(R.string.shuffle, album.songs.size),
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
-                Row() {
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.sort
-                        ),
-                        contentDescription = stringResource(R.string.sort_song_icon_desc),
-                        tint = MaterialTheme.colors.secondaryVariant,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                customSheetContent = {
-                                    SongOrderSectionSheetContent(
-                                        songOrder = songOrder,
-                                        onOrderChange = { newOrder ->
-                                            songsViewModel.onEvent(SongsEvent.OrderChange(newOrder))
-                                            bottomSheetScope.launch {
-                                                bottomSheetState.hide()
-                                            }
-                                        },
-                                        onCancel = {
-                                            bottomSheetScope.launch {
-                                                bottomSheetState.hide()
-                                            }
-                                        }
-                                    )
-                                }
-                                bottomSheetScope.launch {
-                                    bottomSheetState.show()
-                                }
-                            }
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.picker
-                        ),
-                        contentDescription = stringResource(R.string.songs_picker_desc),
-                        tint = MaterialTheme.colors.secondaryVariant,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                //Todo launch song picker screen
-                            }
-                    )
-                }
-            }
-            SwipeRefresh(
-                state = swipeRefreshState,
-                onRefresh = {
-                    songsViewModel.onEvent(SongsEvent.RefreshSongs)
-                }
-            ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(songs, key = { it.id }) { song ->
+                    items(album.songs, key = { it.id }) { song ->
                         SongItem(
                             song = song,
                             isCurrentSong = song == mainViewModel.currentPlayingSong.value,
@@ -171,7 +172,7 @@ fun SongsPagerScreen(
                                 .clickable {
                                     mainViewModel.playSong(
                                         song = song,
-                                        songs
+                                        album.songs
                                     )
                                 },
                             onOptionsClicked = {
