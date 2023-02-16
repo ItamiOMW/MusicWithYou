@@ -6,5 +6,6 @@ data class Album(
     val artistId: Long,
     val artistName: String,
     val songs: List<Song>,
-    val uriString: String,
+    val year: Int,
+    val imageUri: String,
 )

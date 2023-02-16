@@ -4,16 +4,12 @@ import android.app.Application
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.musicwithyou.R
-import com.example.musicwithyou.data.local.room.converter.DatabaseTypeConverter
+import com.example.musicwithyou.data.local.room.dao.AlbumDao
 import com.example.musicwithyou.data.local.room.dao.PlaylistDao
 import com.example.musicwithyou.data.local.room.dao.SongDao
-import com.example.musicwithyou.data.local.room.models.PlaylistEntity
-import com.example.musicwithyou.data.local.room.models.SongEntity
-import com.example.musicwithyou.data.local.room.models.SongPlaylistCrossRef
-import com.example.musicwithyou.data.local.room.models.SortedSongPlaylistCrossRef
+import com.example.musicwithyou.data.local.room.models.*
 import com.example.musicwithyou.utils.FAVORITE_PLAYLIST_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,22 +20,22 @@ import kotlinx.coroutines.launch
         PlaylistEntity::class,
         SongEntity::class,
         SongPlaylistCrossRef::class,
+        AlbumEntity::class
     ],
     exportSchema = false,
-    version = 2,
+    version = 3,
     views = [
         SortedSongPlaylistCrossRef::class
     ]
 )
-@TypeConverters(
-    DatabaseTypeConverter::class
-)
-abstract class MusicWithYouDataBase : RoomDatabase() {
 
+abstract class MusicWithYouDataBase : RoomDatabase() {
 
     abstract fun playListDao(): PlaylistDao
 
     abstract fun songDao(): SongDao
+
+    abstract fun albumDao(): AlbumDao
 
 
     companion object {
