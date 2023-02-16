@@ -33,7 +33,9 @@ class AlbumContentResolver @Inject constructor(
             val artistIdColumn =
                 crsr.getColumnIndexOrThrow(MediaStore.Audio.AlbumColumns.ARTIST_ID)
             val artistNameColumn =
-                crsr.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AlbumColumns.ARTIST)
+            val songsCountColumn =
+                crsr.getColumnIndexOrThrow(MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS)
 
             crsr.apply {
                 if (count != 0) {
@@ -43,6 +45,7 @@ class AlbumContentResolver @Inject constructor(
                         val year = getInt(yearColumn)
                         val artistId = getLong(artistIdColumn)
                         val artistName = getString(artistNameColumn)
+                        val songsCount = getInt(songsCountColumn)
                         val imageUri = Uri.withAppendedPath(
                             Uri.parse("content://media/external/audio/albumart"),
                             id.toString()
@@ -52,6 +55,7 @@ class AlbumContentResolver @Inject constructor(
                             title,
                             artistId,
                             artistName,
+                            songsCount,
                             year,
                             imageUri.toString()
                         )
@@ -71,7 +75,8 @@ class AlbumContentResolver @Inject constructor(
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.AlbumColumns.ARTIST,
             MediaStore.Audio.AlbumColumns.ARTIST_ID,
-            MediaStore.Audio.AlbumColumns.LAST_YEAR
+            MediaStore.Audio.AlbumColumns.LAST_YEAR,
+            MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS
         )
 
     }

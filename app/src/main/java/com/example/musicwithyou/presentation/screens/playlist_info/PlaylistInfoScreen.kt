@@ -107,7 +107,7 @@ fun PlaylistInfoScreen(
                             .padding(end = 5.dp)
                     )
                     BasicText(
-                        text = "${stringResource(R.string.shuffle)}(${playlist.songs.size})",
+                        text = stringResource(R.string.shuffle, playlist.songs.size),
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )

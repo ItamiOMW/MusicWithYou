@@ -25,10 +25,6 @@ fun DeletePlaylistDialog(
     onDismiss: () -> Unit,
 ) {
 
-    var playlistTitleText by remember {
-        mutableStateOf("")
-    }
-
     Dialog(
         onDismissRequest = { onDismiss() },
         properties = DialogProperties(
@@ -48,7 +44,7 @@ fun DeletePlaylistDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "${stringResource(R.string.delete_playlist)} ${playlist.title}?",
+                    text = stringResource(R.string.delete_playlist_question, playlist.title),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Row(

@@ -65,7 +65,7 @@ fun PlaylistItem(
                     modifier = Modifier
                 )
                 Text(
-                    text = "${songs.size} ${stringResource(id = R.string.songs)}",
+                    text = stringResource(id = R.string.songs_count, songs.size),
                     style = MaterialTheme.typography.body2,
                     color = MaterialTheme.colors.secondaryVariant
                 )

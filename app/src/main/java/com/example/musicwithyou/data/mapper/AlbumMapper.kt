@@ -12,7 +12,8 @@ fun AlbumEntity.toAlbum(songs: List<Song>) = Album(
     artistName = artistName,
     songs = songs,
     year = year,
-    imageUri = imageUri
+    imageUri = imageUri,
+    songsCount = songsCount
 )
 
 fun Album.toAlbumEntity() = AlbumEntity(
@@ -21,5 +22,6 @@ fun Album.toAlbumEntity() = AlbumEntity(
     artistId = artistId,
     artistName = artistName,
     year = year,
-    imageUri = imageUri
+    imageUri = imageUri,
+    songsCount = songsCount
 )

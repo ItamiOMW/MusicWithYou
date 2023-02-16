@@ -10,6 +10,7 @@ data class AlbumEntity(
     val title: String,
     val artistId: Long,
     val artistName: String,
+    val songsCount: Int,
     val year: Int,
     val imageUri: String,
 )

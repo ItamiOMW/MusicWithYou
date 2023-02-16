@@ -1,14 +1,16 @@
 <resources>
     <string name="app_name">Music With You</string>
-    <string name="songs">Songs</string>
-    <string name="playlists">Playlists</string>
+    <string name="songs_count">%d Songs</string>
+    <string name="songs_title">Songs</string>
+    <string name="playlists_count">Playlists (%d)</string>
+    <string name="playlists_title">Playlists</string>
     <string name="albums">Albums</string>
     <string name="icon_desc">icon</string>
-    <string name="dot">·</string>
+    <string name="dot">•</string>
     <string name="options_desc">options</string>
     <string name="song_image_desc">image of the song</string>
     <string name="shuffle_icon_desc">Shuffle songs</string>
-    <string name="shuffle">Shuffle</string>
+    <string name="shuffle">Shuffle (%d)</string>
     <string name="drawer_desc">Open navigation menu</string>
     <string name="search_desc">Open search screen</string>
     <string name="permission_rationale_message_default">To use this application functionality, you need to give us the permission</string>
@@ -60,7 +62,7 @@
     <string name="create">Create</string>
     <string name="title_is_empty">Title is empty</string>
     <string name="delete">Delete</string>
-    <string name="delete_playlist">Delete playlist</string>
+    <string name="delete_playlist_question">Delete playlist %d ?</string>
     <string name="renaming_playlist">Renaming a playlist</string>
     <string name="rename">Rename</string>
     <string name="create_new_playlist">Create new playlist</string>
@@ -68,4 +70,5 @@
     <string name="close_playlist_info_desc">Close playlist info screen</string>
     <string name="delete_from_playlist">Delete from playlist</string>
     <string name="image_of_album_desc">Image of the album</string>
+    <string name="album_info">Album • %d Songs • %d</string>
 </resources>

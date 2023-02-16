@@ -39,7 +39,7 @@ fun MainTabsScreen(
 
     val mainTabs = listOf(
         TabItem(
-            title = stringResource(id = R.string.songs),
+            title = stringResource(id = R.string.songs_title),
             iconId = R.drawable.music,
             screen = {
                 SongsPagerScreen(
@@ -50,7 +50,7 @@ fun MainTabsScreen(
             }
         ),
         TabItem(
-            title = stringResource(id = R.string.playlists),
+            title = stringResource(id = R.string.playlists_title),
             iconId = R.drawable.playlist,
             screen = {
                 PlaylistsPagerScreen(
