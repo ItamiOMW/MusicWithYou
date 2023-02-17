@@ -126,7 +126,7 @@ fun CurrentQueueScreen(
                                                             AddToPlaylistSheetContent(
                                                                 modifier = Modifier
                                                                     .fillMaxHeight(0.5f),
-                                                                playlists = mainViewModel.playlists,
+                                                                playlistPreviews = mainViewModel.playlistPreviews,
                                                                 onCreateNewPlaylist = {
                                                                     mainViewModel.onShowCreatePlaylistDialog(
                                                                         listOf(song)
@@ -138,7 +138,7 @@ fun CurrentQueueScreen(
                                                                 onPlaylistClick = {
                                                                     mainViewModel.addToPlaylist(
                                                                         listOf(song),
-                                                                        it
+                                                                        it.id
                                                                     )
                                                                     bottomSheetScope.launch {
                                                                         bottomSheetState.hide()

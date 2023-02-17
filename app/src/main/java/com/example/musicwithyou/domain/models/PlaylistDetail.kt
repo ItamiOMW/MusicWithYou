@@ -2,7 +2,7 @@ package com.example.musicwithyou.domain.models
 
 import com.example.musicwithyou.utils.UNKNOWN_ID_LONG
 
-data class Playlist(
+data class PlaylistDetail(
     val id: Long = UNKNOWN_ID_LONG,
     val title: String,
     val songs: List<Song>,

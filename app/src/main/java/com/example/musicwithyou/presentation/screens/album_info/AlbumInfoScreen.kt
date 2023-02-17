@@ -41,7 +41,7 @@ fun AlbumInfoScreen(
     albumInfoViewModel: AlbumInfoViewModel = hiltViewModel(),
 ) {
 
-    val album = albumInfoViewModel.album
+    val album = albumInfoViewModel.albumDetail
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -210,7 +210,7 @@ fun AlbumInfoScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlists = mainViewModel.playlists,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             listOf(song)
@@ -222,7 +222,7 @@ fun AlbumInfoScreen(
                                                                     onPlaylistClick = {
                                                                         mainViewModel.addToPlaylist(
                                                                             listOf(song),
-                                                                            it
+                                                                            it.id
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()

@@ -1,11 +1,12 @@
 package com.example.musicwithyou.domain.repository
 
-import com.example.musicwithyou.domain.models.Album
+import com.example.musicwithyou.domain.models.AlbumDetail
+import com.example.musicwithyou.domain.models.AlbumPreview
 
 interface AlbumRepository {
 
-    suspend fun getAlbums(): List<Album>
+    suspend fun getAlbumPreviews(): List<AlbumPreview>
 
-    suspend fun getAlbumById(id: Long): Album?
+    suspend fun getAlbumDetailById(id: Long): AlbumDetail?
 
 }

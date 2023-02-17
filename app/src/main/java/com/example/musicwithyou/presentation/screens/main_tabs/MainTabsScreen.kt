@@ -61,7 +61,7 @@ fun MainTabsScreen(
             }
         ),
         TabItem(
-            title = stringResource(id = R.string.albums),
+            title = stringResource(id = R.string.albums_title),
             iconId = R.drawable.album,
             screen = {
                 AlbumsPagerScreen(

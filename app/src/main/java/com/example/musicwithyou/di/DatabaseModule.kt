@@ -3,6 +3,7 @@ package com.example.musicwithyou.di
 import android.app.Application
 import com.example.musicwithyou.data.local.room.MusicWithYouDataBase
 import com.example.musicwithyou.data.local.room.dao.AlbumDao
+import com.example.musicwithyou.data.local.room.dao.ArtistDao
 import com.example.musicwithyou.data.local.room.dao.PlaylistDao
 import com.example.musicwithyou.data.local.room.dao.SongDao
 import dagger.Module
@@ -32,5 +33,11 @@ object DatabaseModule {
     fun provideAlbumDao(
         application: Application,
     ): AlbumDao = MusicWithYouDataBase.getInstance(application).albumDao()
+
+    @Provides
+    @Singleton
+    fun provideArtistDao(
+        application: Application,
+    ): ArtistDao = MusicWithYouDataBase.getInstance(application).artistDao()
 
 }

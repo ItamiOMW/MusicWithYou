@@ -1,6 +1,6 @@
 package com.example.musicwithyou.domain.models
 
-data class Album(
+data class AlbumDetail(
     val id: Long,
     val title: String,
     val artistId: Long,

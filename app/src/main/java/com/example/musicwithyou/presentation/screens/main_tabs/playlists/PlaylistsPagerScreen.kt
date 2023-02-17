@@ -39,7 +39,7 @@ fun PlaylistsPagerScreen(
 ) {
 
     //States
-    val playlists = playlistsViewModel.state.playlists
+    val playlists = playlistsViewModel.state.playlistPreviews
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -55,7 +55,7 @@ fun PlaylistsPagerScreen(
     if (playlistsViewModel.state.showDeletePlaylistDialog) {
         playlistsViewModel.state.playlistToDelete?.let {
             DeletePlaylistDialog(
-                playlist = it,
+                playlistPreview = it,
                 onConfirm = {
                     playlistsViewModel.onEvent(PlaylistsEvent.DeletePlaylist(it))
                 },
@@ -69,7 +69,7 @@ fun PlaylistsPagerScreen(
     if (playlistsViewModel.state.showRenamePlaylistDialog) {
         playlistsViewModel.state.playlistToRename?.let {
             RenamePlaylistDialog(
-                playlist = it,
+                playlistPreview = it,
                 onConfirm = { newTitle ->
                     playlistsViewModel.onEvent(PlaylistsEvent.RenamePlaylist(it, newTitle))
                 },
@@ -121,7 +121,7 @@ fun PlaylistsPagerScreen(
             ) {
                 items(playlists, key = { it.id }) { playlist ->
                     PlaylistItem(
-                        playlist = playlist,
+                        playlistPreview = playlist,
                         modifier = Modifier
                             .padding(top = 10.dp, bottom = 10.dp)
                             .fillMaxSize()
@@ -148,14 +148,14 @@ fun PlaylistsPagerScreen(
                             bottomSheetScope.launch {
                                 customSheetContent = {
                                     PlaylistActionsSheetContent(
-                                        playlist = playlist,
+                                        playlistPreview = playlist,
                                         actionItems = if (playlist.isDefault) {
                                             listOf(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.playNext(playlist.songs)
+                                                            mainViewModel.playNext(playlist)
                                                             bottomSheetState.hide()
                                                         }
                                                     },
@@ -165,7 +165,7 @@ fun PlaylistsPagerScreen(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.addToQueue(playlist.songs)
+                                                            mainViewModel.addToQueue(playlist)
                                                             bottomSheetState.hide()
                                                         }
 
@@ -180,10 +180,10 @@ fun PlaylistsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlists = playlists,
+                                                                    playlistPreviews = playlists,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
-                                                                            playlist.songs
+                                                                            playlist
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()
@@ -191,8 +191,8 @@ fun PlaylistsPagerScreen(
                                                                     },
                                                                     onPlaylistClick = {
                                                                         mainViewModel.addToPlaylist(
-                                                                            playlist.songs,
-                                                                            it
+                                                                            playlist,
+                                                                            it.id
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()
@@ -212,7 +212,7 @@ fun PlaylistsPagerScreen(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.playNext(playlist.songs)
+                                                            mainViewModel.playNext(playlist)
                                                             bottomSheetState.hide()
                                                         }
                                                     },
@@ -222,7 +222,7 @@ fun PlaylistsPagerScreen(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.addToQueue(playlist.songs)
+                                                            mainViewModel.addToQueue(playlist)
                                                             bottomSheetState.hide()
                                                         }
 
@@ -237,10 +237,10 @@ fun PlaylistsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlists = playlists,
+                                                                    playlistPreviews = playlists,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
-                                                                            playlist.songs
+                                                                            playlist
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()
@@ -248,8 +248,8 @@ fun PlaylistsPagerScreen(
                                                                     },
                                                                     onPlaylistClick = {
                                                                         mainViewModel.addToPlaylist(
-                                                                            playlist.songs,
-                                                                            it
+                                                                            playlist,
+                                                                            it.id
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()

@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.annotation.WorkerThread
 import com.example.musicwithyou.data.local.room.models.SongEntity
 import javax.inject.Inject
 
@@ -12,8 +11,8 @@ class SongContentResolver @Inject constructor(
     private val application: Application,
 ) : ContentResolverHelper<SongEntity> {
 
-    @WorkerThread
-    override fun getData(): List<SongEntity> {
+
+    override suspend fun getData(): List<SongEntity> {
 
         val songList = mutableListOf<SongEntity>()
 

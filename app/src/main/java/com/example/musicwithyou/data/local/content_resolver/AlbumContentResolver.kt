@@ -3,7 +3,6 @@ package com.example.musicwithyou.data.local.content_resolver
 import android.app.Application
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.annotation.WorkerThread
 import com.example.musicwithyou.data.local.room.models.AlbumEntity
 import javax.inject.Inject
 
@@ -12,8 +11,8 @@ class AlbumContentResolver @Inject constructor(
 ) : ContentResolverHelper<AlbumEntity> {
 
 
-    @WorkerThread
-    override fun getData(): List<AlbumEntity> {
+
+    override suspend fun getData(): List<AlbumEntity> {
 
         val albumList = mutableListOf<AlbumEntity>()
 

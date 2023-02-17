@@ -17,13 +17,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.PlaylistPreview
+import com.example.musicwithyou.domain.models.ArtistPreview
 
 
 @Composable
-fun PlaylistItem(
-    playlistPreview: PlaylistPreview,
-    onOptionsClicked: ((PlaylistPreview) -> Unit)?,
+fun ArtistItem(
+    artist: ArtistPreview,
+    onOptionsClicked: (ArtistPreview) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -37,10 +37,10 @@ fun PlaylistItem(
                 .align(Alignment.CenterVertically)
         ) {
             AsyncImage(
-                model = playlistPreview.iconId,
+                model = artist.imageUri,
                 contentDescription = stringResource(id = R.string.song_image_desc),
-                modifier = Modifier.size(55.dp),
-                error = painterResource(id = R.drawable.playlist),
+                modifier = Modifier.fillMaxSize(),
+                error = painterResource(id = R.drawable.artist)
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -56,20 +56,29 @@ fun PlaylistItem(
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Text(
-                    text = playlistPreview.title,
+                    text = artist.name,
                     style = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                 )
                 Text(
-                    text = stringResource(id = R.string.songs_count, playlistPreview.songCount),
+                    text = stringResource(
+                        id = R.string.albums_and_song_count,
+                        artist.albumCount,
+                        artist.songsCount
+                    ),
                     style = MaterialTheme.typography.body2,
+                    overflow = TextOverflow.Clip,
                     color = MaterialTheme.colors.secondaryVariant
                 )
             }
             Spacer(modifier = Modifier.width(6.dp))
-            if (onOptionsClicked != null) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Spacer(modifier = Modifier.width(6.dp))
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -85,7 +94,7 @@ fun PlaylistItem(
                             .padding(end = 5.dp)
                             .clip(CircleShape)
                             .clickable {
-                                onOptionsClicked(playlistPreview)
+                                onOptionsClicked(artist)
                             }
                     )
                 }
@@ -93,4 +102,3 @@ fun PlaylistItem(
         }
     }
 }
-

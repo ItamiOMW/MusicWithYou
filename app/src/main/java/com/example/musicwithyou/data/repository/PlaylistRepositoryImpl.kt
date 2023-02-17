@@ -2,11 +2,9 @@ package com.example.musicwithyou.data.repository
 
 import com.example.musicwithyou.data.local.room.dao.PlaylistDao
 import com.example.musicwithyou.data.local.room.models.SongPlaylistCrossRef
-import com.example.musicwithyou.data.mapper.toPlaylist
-import com.example.musicwithyou.data.mapper.toPlaylistEntity
-import com.example.musicwithyou.data.mapper.toSong
-import com.example.musicwithyou.data.mapper.toSongEntity
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.data.mapper.*
+import com.example.musicwithyou.domain.models.PlaylistDetail
+import com.example.musicwithyou.domain.models.PlaylistPreview
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.domain.repository.PlaylistRepository
 import com.example.musicwithyou.utils.FAVORITE_PLAYLIST_ID
@@ -18,54 +16,50 @@ class PlaylistRepositoryImpl @Inject constructor(
     private val playListDao: PlaylistDao,
 ) : PlaylistRepository {
 
-    override suspend fun getPlaylists(): Flow<List<Playlist>> {
+    override suspend fun getPlaylistPreviews(): Flow<List<PlaylistPreview>> {
         return playListDao.getPlaylistsWithSongs().map { list ->
-            list.map { playlistWithSongs ->
-                val songs = playlistWithSongs.songs.map { songEntity ->
-                    songEntity.toSong()
-                }
-                val playlistEntity = playlistWithSongs.playlistEntity
-                playlistEntity.toPlaylist(songs = songs)
+            list.map { entity ->
+                entity.playlistEntity.toPlaylistPreview(entity.songs.size)
             }
         }
     }
 
-    override suspend fun getPlaylist(id: Long): Flow<Playlist?> {
+    override suspend fun getPlaylistDetail(id: Long): Flow<PlaylistDetail?> {
         return playListDao.getPlaylistWithSongsByIdFlow(id).map {
             val songs = it?.songs?.map { it.toSong() } ?: emptyList()
             it?.playlistEntity?.toPlaylist(songs)
         }
     }
 
-    override suspend fun moveSong(playlist: Playlist, from: Int, to: Int) {
-        playListDao.move(playlist.id, from, to)
+    override suspend fun moveSong(playlistId: Long, from: Int, to: Int) {
+        playListDao.move(playlistId, from, to)
     }
 
-    override suspend fun createPlaylist(playlist: Playlist) {
+    override suspend fun createPlaylist(playlist: PlaylistDetail) {
         val playlistEntity = playlist.toPlaylistEntity()
-        val songs = playlist.songs.map { song ->
+        val songEntities = playlist.songs.map { song ->
             song.toSongEntity()
         }
-        playListDao.createPlaylist(playlistEntity, songs)
+        playListDao.createPlaylist(playlistEntity, songEntities)
     }
 
-    override suspend fun updatePlaylist(playlist: Playlist) {
-        if (playlist.isDefault) {
+    override suspend fun updatePlaylist(playlistPreview: PlaylistPreview) {
+        if (playlistPreview.isDefault) {
             return
         }
-        val playlistEntity = playlist.toPlaylistEntity()
+        val playlistEntity = playlistPreview.toPlaylistEntity()
         playListDao.updatePlaylist(playlistEntity)
     }
 
-    override suspend fun deletePlaylist(playlist: Playlist) {
+    override suspend fun deletePlaylist(playlist: PlaylistPreview) {
         if (playlist.isDefault) {
             return
         }
         playListDao.deletePlaylist(playlist.id)
     }
 
-    override suspend fun addSongsToPlaylist(songs: List<Song>, playlist: Playlist) {
-        val playlistWithSongs = playListDao.getPlaylistWithSongsById(playlist.id) ?: return
+    override suspend fun addSongsToPlaylist(songs: List<Song>, playlistId: Long) {
+        val playlistWithSongs = playListDao.getPlaylistWithSongsById(playlistId) ?: return
         var lastIndex = playlistWithSongs.songs.lastIndex
         val refs = songs.map {
             SongPlaylistCrossRef(
@@ -87,9 +81,6 @@ class PlaylistRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addSongsToFavoritePlaylist(songs: List<Song>) {
-        val favoritePlaylist = playListDao.getPlaylistWithSongsById(
-            FAVORITE_PLAYLIST_ID
-        )
         val crossRef = songs.map {
             SongPlaylistCrossRef(
                 it.id,
@@ -106,13 +97,13 @@ class PlaylistRepositoryImpl @Inject constructor(
         ) ?: return
         val playlistSongs = favoritePlaylistWithSongs.songs.map { it.toSong() }
         val playlist = favoritePlaylistWithSongs.playlistEntity.toPlaylist(playlistSongs)
-        deleteSongsFromPlaylist(songs, playlist)
+        deleteSongsFromPlaylist(songs, playlist.id)
     }
 
-    override suspend fun deleteSongsFromPlaylist(songs: List<Song>, playlist: Playlist) {
-        playListDao.getPlaylistWithSongsById(playlist.id) ?: return
+    override suspend fun deleteSongsFromPlaylist(songs: List<Song>, playlistId: Long) {
+        playListDao.getPlaylistWithSongsById(playlistId) ?: return
         songs.forEach {
-            playListDao.deleteSongPlaylistRefById(playlist.id, it.id)
+            playListDao.deleteSongPlaylistRefById(playlistId, it.id)
         }
     }
 

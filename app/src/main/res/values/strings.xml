@@ -4,7 +4,8 @@
     <string name="songs_title">Songs</string>
     <string name="playlists_count">Playlists (%d)</string>
     <string name="playlists_title">Playlists</string>
-    <string name="albums">Albums</string>
+    <string name="albums_title">Albums</string>
+    <string name="albums_and_song_count">%d albums | %d songs</string>
     <string name="icon_desc">icon</string>
     <string name="dot">•</string>
     <string name="options_desc">options</string>

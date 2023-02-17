@@ -1,24 +1,25 @@
 package com.example.musicwithyou.domain.repository
 
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistDetail
+import com.example.musicwithyou.domain.models.PlaylistPreview
 import com.example.musicwithyou.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
 
-    suspend fun getPlaylists(): Flow<List<Playlist>>
+    suspend fun getPlaylistPreviews(): Flow<List<PlaylistPreview>>
 
-    suspend fun getPlaylist(id: Long): Flow<Playlist?>
+    suspend fun getPlaylistDetail(id: Long): Flow<PlaylistDetail?>
 
-    suspend fun moveSong(playlist: Playlist, from: Int, to: Int)
+    suspend fun moveSong(playlistId: Long, from: Int, to: Int)
 
-    suspend fun createPlaylist(playlist: Playlist)
+    suspend fun createPlaylist(playlist: PlaylistDetail)
 
-    suspend fun updatePlaylist(playlist: Playlist)
+    suspend fun updatePlaylist(playlistPreview: PlaylistPreview)
 
-    suspend fun deletePlaylist(playlist: Playlist)
+    suspend fun deletePlaylist(playlistPreview: PlaylistPreview)
 
-    suspend fun addSongsToPlaylist(songs: List<Song>, playlist: Playlist)
+    suspend fun addSongsToPlaylist(songs: List<Song>, playlistId: Long)
 
     suspend fun getFavoritePlaylistSongs(): Flow<List<Song>>
 
@@ -26,6 +27,6 @@ interface PlaylistRepository {
 
     suspend fun deleteSongsFromFavoritePlaylist(songs: List<Song>)
 
-    suspend fun deleteSongsFromPlaylist(songs: List<Song>, playlist: Playlist)
+    suspend fun deleteSongsFromPlaylist(songs: List<Song>, playlistId: Long)
 
 }

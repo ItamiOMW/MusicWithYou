@@ -1,11 +1,12 @@
 package com.example.musicwithyou.data.mapper
 
 import com.example.musicwithyou.data.local.room.models.AlbumEntity
-import com.example.musicwithyou.domain.models.Album
+import com.example.musicwithyou.domain.models.AlbumDetail
+import com.example.musicwithyou.domain.models.AlbumPreview
 import com.example.musicwithyou.domain.models.Song
 
 
-fun AlbumEntity.toAlbum(songs: List<Song>) = Album(
+fun AlbumEntity.toAlbumDetail(songs: List<Song>) = AlbumDetail(
     id = id,
     title = title,
     artistId = artistId,
@@ -16,7 +17,17 @@ fun AlbumEntity.toAlbum(songs: List<Song>) = Album(
     songsCount = songsCount
 )
 
-fun Album.toAlbumEntity() = AlbumEntity(
+fun AlbumEntity.toAlbumPreview() = AlbumPreview(
+    id = id,
+    title = title,
+    artistId = artistId,
+    artistName = artistName,
+    year = year,
+    imageUri = imageUri,
+    songsCount = songsCount
+)
+
+fun AlbumDetail.toAlbumEntity() = AlbumEntity(
     id = id,
     title = title,
     artistId = artistId,

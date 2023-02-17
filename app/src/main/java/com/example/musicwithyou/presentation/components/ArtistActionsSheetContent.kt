@@ -15,12 +15,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.PlaylistPreview
+import com.example.musicwithyou.domain.models.ArtistPreview
 import com.example.musicwithyou.presentation.utils.ActionItem
 
 @Composable
-fun PlaylistActionsSheetContent(
-    playlistPreview: PlaylistPreview,
+fun ArtistsActionsSheetContent(
+    artistPreview: ArtistPreview,
     actionItems: List<ActionItem>
 ) {
 
@@ -30,7 +30,7 @@ fun PlaylistActionsSheetContent(
             .wrapContentHeight()
     ) {
         Text(
-            text = playlistPreview.title,
+            text = artistPreview.name,
             style = MaterialTheme.typography.subtitle1,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colors.secondary,

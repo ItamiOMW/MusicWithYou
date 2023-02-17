@@ -2,14 +2,18 @@ package com.example.musicwithyou.di
 
 import android.content.Context
 import com.example.musicwithyou.data.local.content_resolver.AlbumContentResolver
+import com.example.musicwithyou.data.local.content_resolver.ArtistsContentResolver
 import com.example.musicwithyou.data.local.content_resolver.ContentResolverHelper
 import com.example.musicwithyou.data.local.content_resolver.SongContentResolver
 import com.example.musicwithyou.data.local.room.models.AlbumEntity
+import com.example.musicwithyou.data.local.room.models.ArtistEntity
 import com.example.musicwithyou.data.local.room.models.SongEntity
 import com.example.musicwithyou.data.repository.AlbumRepositoryImpl
+import com.example.musicwithyou.data.repository.ArtistRepositoryImpl
 import com.example.musicwithyou.data.repository.PlaylistRepositoryImpl
 import com.example.musicwithyou.data.repository.SongRepositoryImpl
 import com.example.musicwithyou.domain.repository.AlbumRepository
+import com.example.musicwithyou.domain.repository.ArtistRepository
 import com.example.musicwithyou.domain.repository.PlaylistRepository
 import com.example.musicwithyou.domain.repository.SongRepository
 import com.example.musicwithyou.media.exoplayer.MediaPlayerServiceConnection
@@ -39,6 +43,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideArtistContentResolver(
+        contentResolver: ArtistsContentResolver,
+    ): ContentResolverHelper<ArtistEntity> = contentResolver
+
+    @Provides
+    @Singleton
     fun provideSongRepository(
         songRepositoryImpl: SongRepositoryImpl,
     ): SongRepository = songRepositoryImpl
@@ -54,6 +64,12 @@ object AppModule {
     fun provideAlbumRepository(
         albumRepositoryImpl: AlbumRepositoryImpl,
     ): AlbumRepository = albumRepositoryImpl
+
+    @Provides
+    @Singleton
+    fun provideArtistRepository(
+        artistRepositoryImpl: ArtistRepositoryImpl,
+    ): ArtistRepository = artistRepositoryImpl
 
     @Provides
     @Singleton

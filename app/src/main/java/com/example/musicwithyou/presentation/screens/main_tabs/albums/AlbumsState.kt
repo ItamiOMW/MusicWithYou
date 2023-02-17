@@ -1,8 +1,8 @@
 package com.example.musicwithyou.presentation.screens.main_tabs.albums
 
-import com.example.musicwithyou.domain.models.Album
+import com.example.musicwithyou.domain.models.AlbumPreview
 
 data class AlbumsState(
-    val albums: List<Album> = emptyList(),
+    val albumPreviews: List<AlbumPreview> = emptyList(),
     val isRefreshing: Boolean = false
 )

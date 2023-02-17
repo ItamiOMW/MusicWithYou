@@ -9,8 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Playlist
-import com.example.musicwithyou.domain.models.Song
+import com.example.musicwithyou.domain.models.*
+import com.example.musicwithyou.domain.usecase.album_usecase.AlbumUseCases
+import com.example.musicwithyou.domain.usecase.artist_usecase.ArtistUseCases
 import com.example.musicwithyou.domain.usecase.playlist_usecase.PlaylistUseCases
 import com.example.musicwithyou.media.exoplayer.MediaPlayerServiceConnection
 import com.example.musicwithyou.media.service.MediaPlayerService
@@ -19,6 +20,7 @@ import com.example.musicwithyou.media.utils.PLAYBACK_UPDATE_INTERVAL
 import com.example.musicwithyou.media.utils.currentPosition
 import com.example.musicwithyou.utils.InvalidTitleException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +30,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     serviceConnection: MediaPlayerServiceConnection,
     private val playlistUseCases: PlaylistUseCases,
+    private val albumUseCases: AlbumUseCases,
+    private val artistUseCases: ArtistUseCases,
     private val application: Application,
 ) : ViewModel() {
 
@@ -53,7 +57,7 @@ class MainViewModel @Inject constructor(
     var showCreatePlaylistDialog by mutableStateOf(false)
         private set
 
-    var playlists by mutableStateOf(emptyList<Playlist>())
+    var playlistPreviews by mutableStateOf(emptyList<PlaylistPreview>())
         private set
 
     private var songsToCreatePlaylist: List<Song>? = null
@@ -138,12 +142,59 @@ class MainViewModel @Inject constructor(
         serviceConnection.playNext(songs)
     }
 
+    fun playNext(artistPreview: ArtistPreview) {
+        viewModelScope.launch {
+            val artistDetail = artistUseCases.getArtistDetail(artistPreview.id)
+            artistDetail?.songs?.let { playNext(it) }
+        }
+    }
+
+    fun playNext(albumPreview: AlbumPreview) {
+        viewModelScope.launch {
+            val albumDetail = albumUseCases.getAlbumDetailById(albumPreview.id)
+            albumDetail?.songs?.let { playNext(it) }
+        }
+    }
+
+    fun playNext(playlistPreview: PlaylistPreview) {
+        viewModelScope.launch {
+            playlistUseCases.getPlaylistDetail(playlistPreview.id).collect {
+                it?.songs?.let { it1 -> playNext(it1) }
+                cancel()
+            }
+        }
+    }
+
+
     fun addToQueue(song: Song) {
         serviceConnection.addSongToQueue(song)
     }
 
     fun addToQueue(songs: List<Song>) {
         serviceConnection.addSongsToQueue(songs)
+    }
+
+    fun addToQueue(artistPreview: ArtistPreview) {
+        viewModelScope.launch {
+            val artistDetail = artistUseCases.getArtistDetail(artistPreview.id)
+            artistDetail?.songs?.let { addToQueue(it) }
+        }
+    }
+
+    fun addToQueue(albumPreview: AlbumPreview) {
+        viewModelScope.launch {
+            val albumDetail = albumUseCases.getAlbumDetailById(albumPreview.id)
+            albumDetail?.songs?.let { addToQueue(it) }
+        }
+    }
+
+    fun addToQueue(playlistPreview: PlaylistPreview) {
+        viewModelScope.launch {
+            playlistUseCases.getPlaylistDetail(playlistPreview.id).collect {
+                it?.songs?.let { it1 -> addToQueue(it1) }
+                cancel()
+            }
+        }
     }
 
     fun playShuffled(currentSongList: List<Song>) {
@@ -179,13 +230,51 @@ class MainViewModel @Inject constructor(
 
     fun addToPlaylist(
         songs: List<Song>,
-        playlist: Playlist,
+        playlistId: Long,
     ) {
         viewModelScope.launch {
             playlistUseCases.addSongsToPlaylist(
                 songs,
-                playlist
+                playlistId
             )
+        }
+    }
+
+    fun addToPlaylist(
+        albumPreview: AlbumPreview,
+        playlistId: Long,
+    ) {
+        viewModelScope.launch {
+            val albumDetail = albumUseCases.getAlbumDetailById(albumPreview.id)
+            albumDetail?.songs?.let {
+                addToPlaylist(it, playlistId)
+            }
+        }
+    }
+
+    fun addToPlaylist(
+        artistPreview: ArtistPreview,
+        playlistId: Long,
+    ) {
+        viewModelScope.launch {
+            val artistDetail = artistUseCases.getArtistDetail(artistPreview.id)
+            artistDetail?.songs?.let {
+                addToPlaylist(it, playlistId)
+            }
+        }
+    }
+
+    fun addToPlaylist(
+        playlistPreview: PlaylistPreview,
+        playlistId: Long,
+    ) {
+        viewModelScope.launch {
+            playlistUseCases.getPlaylistDetail(playlistPreview.id).collect {
+                it?.songs?.let {
+                    addToPlaylist(it, playlistId)
+                }
+                cancel()
+            }
         }
     }
 
@@ -194,12 +283,12 @@ class MainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val playlist = Playlist(
+                val playlistDetail = PlaylistDetail(
                     title = title,
                     songs = songsToCreatePlaylist ?: emptyList(),
                     createdTimeStamp = System.currentTimeMillis(),
                 )
-                playlistUseCases.createPlaylist(playlist)
+                playlistUseCases.createPlaylist(playlistDetail)
                 onDismissCreatePlaylistDialog()
             } catch (e: InvalidTitleException) {
                 Toast.makeText(
@@ -214,6 +303,32 @@ class MainViewModel @Inject constructor(
     fun onShowCreatePlaylistDialog(songs: List<Song>) {
         songsToCreatePlaylist = songs
         showCreatePlaylistDialog = true
+    }
+
+    fun onShowCreatePlaylistDialog(albumPreview: AlbumPreview) {
+        viewModelScope.launch {
+            val albumDetail = albumUseCases.getAlbumDetailById(albumPreview.id)
+            songsToCreatePlaylist = albumDetail?.songs
+            showCreatePlaylistDialog = true
+        }
+    }
+
+    fun onShowCreatePlaylistDialog(artistPreview: ArtistPreview) {
+        viewModelScope.launch {
+            val artistDetail = artistUseCases.getArtistDetail(artistPreview.id)
+            songsToCreatePlaylist = artistDetail?.songs
+            showCreatePlaylistDialog = true
+        }
+    }
+
+    fun onShowCreatePlaylistDialog(playlistPreview: PlaylistPreview) {
+        viewModelScope.launch {
+            playlistUseCases.getPlaylistDetail(playlistPreview.id).collect {
+                songsToCreatePlaylist = it?.songs
+                showCreatePlaylistDialog = true
+                cancel()
+            }
+        }
     }
 
     fun onDismissCreatePlaylistDialog() {
@@ -231,8 +346,8 @@ class MainViewModel @Inject constructor(
 
     private fun collectPlaylists() {
         viewModelScope.launch {
-            playlistUseCases.getPlaylists().collect { list ->
-                playlists = list
+            playlistUseCases.getPlaylistPreviews().collect { list ->
+                playlistPreviews = list
             }
         }
     }

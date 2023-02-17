@@ -11,9 +11,12 @@ interface AlbumDao {
     suspend fun getAlbums(): List<AlbumEntity>
 
     @Query("SELECT * FROM album_table WHERE id = :id LIMIT 1")
-    suspend fun getAlbumWithSongsById(id: Long): AlbumEntity?
+    suspend fun getAlbumById(id: Long): AlbumEntity?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Query("SELECT * FROM album_table WHERE artistId = :artistId")
+    suspend fun getAlbumsByArtistId(artistId: Long): List<AlbumEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(albums: List<AlbumEntity>)
 
     @Query("DELETE FROM album_table")

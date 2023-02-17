@@ -18,14 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistPreview
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddToPlaylistSheetContent(
-    playlists: List<Playlist>,
+    playlistPreviews: List<PlaylistPreview>,
     onCreateNewPlaylist: () -> Unit,
-    onPlaylistClick: (Playlist) -> Unit,
+    onPlaylistClick: (PlaylistPreview) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -57,9 +57,9 @@ fun AddToPlaylistSheetContent(
                         },
                 )
             }
-            items(items = playlists) {
+            items(items = playlistPreviews) {
                 PlaylistItem(
-                    playlist = it,
+                    playlistPreview = it,
                     modifier = Modifier
                         .padding(top = 10.dp, bottom = 10.dp)
                         .fillMaxSize()

@@ -1,6 +1,7 @@
 package com.example.musicwithyou.domain.usecase.playlist_usecase
 
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistDetail
+import com.example.musicwithyou.domain.models.PlaylistPreview
 import com.example.musicwithyou.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -13,14 +14,15 @@ class PlaylistUseCases @Inject constructor(
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     private val deleteSongsFromFavoritePlaylistUseCase: DeleteSongsFromFavoritePlaylistUseCase,
     private val deleteSongsFromPlaylistUseCase: DeleteSongsFromPlaylistUseCase,
-    private val getPlaylistsUseCase: GetPlaylistsUseCase,
-    private val getPlaylistUseCase: GetPlaylistUseCase,
+    private val getPlaylistPreviewsUseCase: GetPlaylistPreviewsUseCase,
+    private val getPlaylistDetailUseCase: GetPlaylistDetailUseCase,
     private val updatePlaylistUseCase: UpdatePlaylistUseCase,
     private val getFavoritePlaylistSongsUseCase: GetFavoritePlaylistSongsUseCase,
-    private val moveSongUseCase: MoveSongUseCase
+    private val moveSongUseCase: MoveSongUseCase,
 ) {
 
-    suspend fun getPlaylists(): Flow<List<Playlist>> = getPlaylistsUseCase.invoke()
+    suspend fun getPlaylistPreviews(): Flow<List<PlaylistPreview>> =
+        getPlaylistPreviewsUseCase.invoke()
 
     suspend fun getFavoritePlaylistSongs(): Flow<List<Song>> =
         getFavoritePlaylistSongsUseCase.invoke()
@@ -28,33 +30,33 @@ class PlaylistUseCases @Inject constructor(
     suspend fun moveSong(
         from: Int,
         to: Int,
-        playlist: Playlist,
-    ) = moveSongUseCase.invoke(from, to, playlist)
+        playlistId: Long,
+    ) = moveSongUseCase.invoke(from, to, playlistId)
 
-    suspend fun getPlaylist(
-        id: Long,
-    ): Flow<Playlist?> = getPlaylistUseCase.invoke(id)
+    suspend fun getPlaylistDetail(
+        playlistId: Long,
+    ): Flow<PlaylistDetail?> = getPlaylistDetailUseCase.invoke(playlistId)
 
 
     suspend fun createPlaylist(
-        playlist: Playlist,
-    ) = createPlaylistUseCase.invoke(playlist)
+        playlistDetail: PlaylistDetail,
+    ) = createPlaylistUseCase.invoke(playlistDetail)
 
 
     suspend fun updatePlaylist(
-        playlist: Playlist,
-    ) = updatePlaylistUseCase.invoke(playlist)
+        playlistPreview: PlaylistPreview,
+    ) = updatePlaylistUseCase.invoke(playlistPreview)
 
 
     suspend fun deletePlaylist(
-        playlist: Playlist,
-    ) = deletePlaylistUseCase.invoke(playlist)
+        playlistPreview: PlaylistPreview,
+    ) = deletePlaylistUseCase.invoke(playlistPreview)
 
 
     suspend fun addSongsToPlaylist(
         songs: List<Song>,
-        playlist: Playlist,
-    ) = addSongsToPlaylistUseCase.invoke(songs, playlist)
+        playlistId: Long,
+    ) = addSongsToPlaylistUseCase.invoke(songs, playlistId)
 
 
     suspend fun addSongsToFavoritePlaylist(
@@ -69,7 +71,7 @@ class PlaylistUseCases @Inject constructor(
 
     suspend fun deleteSongsFromPlaylist(
         songs: List<Song>,
-        playlist: Playlist,
-    ) = deleteSongsFromPlaylistUseCase.invoke(songs, playlist)
+        playlistId: Long,
+    ) = deleteSongsFromPlaylistUseCase.invoke(songs, playlistId)
 
 }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistDetail
 import com.example.musicwithyou.domain.models.Song
 import com.example.musicwithyou.domain.usecase.playlist_usecase.PlaylistUseCases
 import com.example.musicwithyou.navigation.Screen.Companion.PLAYLIST_ID_ARG
@@ -20,14 +20,14 @@ class PlaylistInfoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    var playlist by mutableStateOf<Playlist?>(null)
+    var playlistDetail by mutableStateOf<PlaylistDetail?>(null)
         private set
 
     init {
         savedStateHandle.get<Long>(PLAYLIST_ID_ARG)?.let { id ->
             viewModelScope.launch {
-                playlistUseCases.getPlaylist(id).collect { playlistById ->
-                    playlist = playlistById
+                playlistUseCases.getPlaylistDetail(id).collect { playlistById ->
+                    playlistDetail = playlistById
                 }
             }
         }
@@ -46,10 +46,10 @@ class PlaylistInfoViewModel @Inject constructor(
 
     private fun deleteSong(song: Song) {
         viewModelScope.launch {
-            playlist?.let {
+            playlistDetail?.let {
                 playlistUseCases.deleteSongsFromPlaylist(
                     songs = listOf(song),
-                    playlist = it
+                    playlistId = it.id
                 )
             }
         }
@@ -58,7 +58,7 @@ class PlaylistInfoViewModel @Inject constructor(
 
     private fun moveSongInPlaylist(from: Int, to: Int) {
         viewModelScope.launch {
-            playlist?.let { playlistUseCases.moveSong(from, to, it) }
+            playlistDetail?.let { playlistUseCases.moveSong(from, to, it.id) }
         }
     }
 
