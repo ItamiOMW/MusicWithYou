@@ -40,7 +40,7 @@ fun AlbumsPagerScreen(
 ) {
 
     //States
-    val albums = albumsViewModel.state.albums
+    val albums = albumsViewModel.state.albumPreviews
     val isRefreshing = albumsViewModel.state.isRefreshing
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
@@ -77,7 +77,7 @@ fun AlbumsPagerScreen(
                 ) {
                     items(albums, key = { it.id }) { album ->
                         AlbumItem(
-                            album = album,
+                            albumPreview = album,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(5.dp)
@@ -106,13 +106,13 @@ fun AlbumsPagerScreen(
                                 bottomSheetScope.launch {
                                     customSheetContent = {
                                         AlbumActionsSheetContent(
-                                            album = album,
+                                            albumPreview = album,
                                             actionItems = listOf(
                                                 ActionItem(
                                                     actionTitle = stringResource(R.string.play_next),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.playNext(album.songs)
+                                                            mainViewModel.playNext(album)
                                                             bottomSheetState.hide()
                                                         }
                                                     },
@@ -122,7 +122,7 @@ fun AlbumsPagerScreen(
                                                     actionTitle = stringResource(R.string.add_to_queue),
                                                     itemClicked = {
                                                         bottomSheetScope.launch {
-                                                            mainViewModel.addToQueue(album.songs)
+                                                            mainViewModel.addToQueue(album)
                                                             bottomSheetState.hide()
                                                         }
 
@@ -137,10 +137,10 @@ fun AlbumsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlists = mainViewModel.playlists,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
-                                                                            album.songs
+                                                                            album
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()
@@ -148,8 +148,8 @@ fun AlbumsPagerScreen(
                                                                     },
                                                                     onPlaylistClick = {
                                                                         mainViewModel.addToPlaylist(
-                                                                            album.songs,
-                                                                            it
+                                                                            album,
+                                                                            it.id
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()

@@ -3,12 +3,12 @@ package com.example.musicwithyou.domain.usecase.album_usecase
 import javax.inject.Inject
 
 class AlbumUseCases @Inject constructor(
-    private val getAlbumByIdUseCase: GetAlbumByIdUseCase,
-    private val getAlbumsUseCase: GetAlbumsUseCase,
+    private val getAlbumDetailByIdUseCase: GetAlbumDetailByIdUseCase,
+    private val getAlbumPreviewsUseCase: GetAlbumPreviewsUseCase,
 ) {
 
-    suspend fun getAlbums() = getAlbumsUseCase.invoke()
+    suspend fun getAlbumPreviews() = getAlbumPreviewsUseCase.invoke()
 
-    suspend fun getAlbumById(id: Long) = getAlbumByIdUseCase.invoke(id)
+    suspend fun getAlbumDetailById(id: Long) = getAlbumDetailByIdUseCase.invoke(id)
 
 }

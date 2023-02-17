@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistPreview
 import com.example.musicwithyou.domain.usecase.playlist_usecase.PlaylistUseCases
 import com.example.musicwithyou.utils.InvalidTitleException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,19 +33,19 @@ class PlaylistsViewModel @Inject constructor(
     fun onEvent(event: PlaylistsEvent) {
         when (event) {
             is PlaylistsEvent.DeletePlaylist -> {
-                deletePlaylist(event.playlist)
+                deletePlaylist(event.playlistPreview)
             }
             is PlaylistsEvent.HideDeletePlaylistDialog -> {
                 onDismissDeletePlaylistDialog()
             }
             is PlaylistsEvent.ShowDeletePlaylistDialog -> {
-                onShowDeletePlaylistDialog(event.playlist)
+                onShowDeletePlaylistDialog(event.playlistPreview)
             }
             is PlaylistsEvent.RenamePlaylist -> {
-                renamePlaylist(event.playlist, event.newTitle)
+                renamePlaylist(event.playlistPreview, event.newTitle)
             }
             is PlaylistsEvent.ShowRenamePlaylistDialog -> {
-                onShowRenamePlaylistDialog(event.playlist)
+                onShowRenamePlaylistDialog(event.playlistPreview)
             }
             is PlaylistsEvent.HideRenamePlaylistDialog -> {
                 onDismissRenamePlaylistDialog()
@@ -56,26 +56,26 @@ class PlaylistsViewModel @Inject constructor(
 
     private fun getPlaylists() {
         viewModelScope.launch {
-            playlistUseCases.getPlaylists().collect { playlists ->
-                state = state.copy(playlists = playlists)
+            playlistUseCases.getPlaylistPreviews().collect { playlists ->
+                state = state.copy(playlistPreviews = playlists)
             }
         }
     }
 
-    private fun deletePlaylist(playlist: Playlist) {
+    private fun deletePlaylist(playlistPreview: PlaylistPreview) {
         viewModelScope.launch {
-            playlistUseCases.deletePlaylist(playlist)
+            playlistUseCases.deletePlaylist(playlistPreview)
             onDismissDeletePlaylistDialog()
         }
     }
 
     private fun renamePlaylist(
-        playlist: Playlist,
+        playlistPreview: PlaylistPreview,
         newTitle: String,
     ) {
         viewModelScope.launch {
             try {
-                val newPlaylist = playlist.copy(title = newTitle)
+                val newPlaylist = playlistPreview.copy(title = newTitle)
                 playlistUseCases.updatePlaylist(newPlaylist)
                 onDismissRenamePlaylistDialog()
             } catch (e: InvalidTitleException) {
@@ -88,16 +88,16 @@ class PlaylistsViewModel @Inject constructor(
         }
     }
 
-    private fun onShowDeletePlaylistDialog(playlist: Playlist) {
-        state = state.copy(showDeletePlaylistDialog = true, playlistToDelete = playlist)
+    private fun onShowDeletePlaylistDialog(playlistPreview: PlaylistPreview) {
+        state = state.copy(showDeletePlaylistDialog = true, playlistToDelete = playlistPreview)
     }
 
     private fun onDismissDeletePlaylistDialog() {
         state = state.copy(showDeletePlaylistDialog = false, playlistToDelete = null)
     }
 
-    private fun onShowRenamePlaylistDialog(playlist: Playlist) {
-        state = state.copy(showRenamePlaylistDialog = true, playlistToRename = playlist)
+    private fun onShowRenamePlaylistDialog(playlistPreview: PlaylistPreview) {
+        state = state.copy(showRenamePlaylistDialog = true, playlistToRename = playlistPreview)
     }
 
     private fun onDismissRenamePlaylistDialog() {

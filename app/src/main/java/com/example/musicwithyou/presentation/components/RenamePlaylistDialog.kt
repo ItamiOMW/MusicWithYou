@@ -13,20 +13,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistPreview
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RenamePlaylistDialog(
-    playlist: Playlist,
+    playlistPreview: PlaylistPreview,
     modifier: Modifier = Modifier,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
 
     var playlistTitleText by remember {
-        mutableStateOf(playlist.title)
+        mutableStateOf(playlistPreview.title)
     }
 
     Dialog(

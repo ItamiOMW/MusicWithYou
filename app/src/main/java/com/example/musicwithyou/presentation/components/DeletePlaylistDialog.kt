@@ -13,13 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistPreview
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DeletePlaylistDialog(
-    playlist: Playlist,
+    playlistPreview: PlaylistPreview,
     modifier: Modifier = Modifier,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -44,7 +44,7 @@ fun DeletePlaylistDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(R.string.delete_playlist_question, playlist.title),
+                    text = stringResource(R.string.delete_playlist_question, playlistPreview.title),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Row(

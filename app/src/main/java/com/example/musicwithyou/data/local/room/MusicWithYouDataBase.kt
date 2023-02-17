@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.musicwithyou.R
 import com.example.musicwithyou.data.local.room.dao.AlbumDao
+import com.example.musicwithyou.data.local.room.dao.ArtistDao
 import com.example.musicwithyou.data.local.room.dao.PlaylistDao
 import com.example.musicwithyou.data.local.room.dao.SongDao
 import com.example.musicwithyou.data.local.room.models.*
@@ -20,10 +21,11 @@ import kotlinx.coroutines.launch
         PlaylistEntity::class,
         SongEntity::class,
         SongPlaylistCrossRef::class,
-        AlbumEntity::class
+        AlbumEntity::class,
+        ArtistEntity::class
     ],
     exportSchema = false,
-    version = 4,
+    version = 5,
     views = [
         SortedSongPlaylistCrossRef::class
     ]
@@ -36,6 +38,8 @@ abstract class MusicWithYouDataBase : RoomDatabase() {
     abstract fun songDao(): SongDao
 
     abstract fun albumDao(): AlbumDao
+
+    abstract fun artistDao(): ArtistDao
 
 
     companion object {

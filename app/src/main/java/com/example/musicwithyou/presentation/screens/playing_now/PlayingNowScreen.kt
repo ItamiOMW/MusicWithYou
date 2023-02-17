@@ -183,7 +183,7 @@ fun PlayingNowScreen(
                                                             AddToPlaylistSheetContent(
                                                                 modifier = Modifier
                                                                     .fillMaxHeight(0.5f),
-                                                                playlists = mainViewModel.playlists,
+                                                                playlistPreviews = mainViewModel.playlistPreviews,
                                                                 onCreateNewPlaylist = {
                                                                     mainViewModel.onShowCreatePlaylistDialog(
                                                                         listOf(currentSong)
@@ -195,7 +195,7 @@ fun PlayingNowScreen(
                                                                 onPlaylistClick = {
                                                                     mainViewModel.addToPlaylist(
                                                                         listOf(currentSong),
-                                                                        it
+                                                                        it.id
                                                                     )
                                                                     bottomSheetScope.launch {
                                                                         bottomSheetState.hide()

@@ -1,6 +1,5 @@
 package com.example.musicwithyou.domain.usecase.playlist_usecase
 
-import com.example.musicwithyou.domain.models.Playlist
 import com.example.musicwithyou.domain.repository.PlaylistRepository
 import javax.inject.Inject
 
@@ -11,7 +10,7 @@ class MoveSongUseCase @Inject constructor(
     suspend operator fun invoke(
         from: Int,
         to: Int,
-        playlist: Playlist,
-    ) = repository.moveSong(playlist, from, to)
+        playlistId: Long,
+    ) = repository.moveSong(playlistId, from, to)
 
 }

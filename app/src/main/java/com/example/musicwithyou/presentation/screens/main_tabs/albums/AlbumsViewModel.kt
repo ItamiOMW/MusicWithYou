@@ -38,8 +38,8 @@ class AlbumsViewModel @Inject constructor(
         getAlbumsJob?.cancel()
         getAlbumsJob = viewModelScope.launch {
             state = state.copy(isRefreshing = true)
-            val albums = albumUseCases.getAlbums()
-            state = state.copy(albums = albums, isRefreshing = false)
+            val albums = albumUseCases.getAlbumPreviews()
+            state = state.copy(albumPreviews = albums, isRefreshing = false)
         }
     }
 

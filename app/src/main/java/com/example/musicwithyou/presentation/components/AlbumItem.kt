@@ -18,14 +18,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.musicwithyou.R
-import com.example.musicwithyou.domain.models.Album
+import com.example.musicwithyou.domain.models.AlbumPreview
 
 
 @Composable
 fun AlbumItem(
-    album: Album,
+    albumPreview: AlbumPreview,
     modifier: Modifier = Modifier,
-    onOptionsClicked: (Album) -> Unit,
+    onOptionsClicked: (AlbumPreview) -> Unit,
     imageSize: Dp = 200.dp
 ) {
 
@@ -39,7 +39,7 @@ fun AlbumItem(
                 .padding(30.dp),
         ) {
             AsyncImage(
-                model = album.imageUri,
+                model = albumPreview.imageUri,
                 contentDescription = stringResource(R.string.image_of_album_desc),
                 error = painterResource(id = R.drawable.album),
                 modifier = Modifier.fillMaxSize()
@@ -55,14 +55,14 @@ fun AlbumItem(
                     .weight(2f)
             ) {
                 Text(
-                    text = album.title,
+                    text = albumPreview.title,
                     style = MaterialTheme.typography.body1,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                 )
                 Text(
-                    text = album.artistName,
+                    text = albumPreview.artistName,
                     style = MaterialTheme.typography.body2,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -84,7 +84,7 @@ fun AlbumItem(
                         .padding(end = 5.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onOptionsClicked(album)
+                            onOptionsClicked(albumPreview)
                         }
                 )
             }

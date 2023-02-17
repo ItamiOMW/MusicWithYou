@@ -1,13 +1,13 @@
 package com.example.musicwithyou.presentation.screens.main_tabs.playlists
 
-import com.example.musicwithyou.domain.models.Playlist
+import com.example.musicwithyou.domain.models.PlaylistPreview
 
 data class PlaylistsState(
-    val playlists: List<Playlist> = emptyList(),
+    val playlistPreviews: List<PlaylistPreview> = emptyList(),
 
     val showDeletePlaylistDialog: Boolean = false,
-    val playlistToDelete: Playlist? = null,
+    val playlistToDelete: PlaylistPreview? = null,
 
     val showRenamePlaylistDialog: Boolean = false,
-    val playlistToRename: Playlist? = null
+    val playlistToRename: PlaylistPreview? = null
 )

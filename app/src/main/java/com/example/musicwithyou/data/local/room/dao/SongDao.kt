@@ -12,6 +12,12 @@ interface SongDao {
     @Query("SELECT * FROM song_table WHERE id = :id")
     suspend fun getSongById(id: Long): SongEntity?
 
+    @Query("SELECT * FROM song_table WHERE artistId = :artistId")
+    suspend fun getSongsByArtistId(artistId: Long): List<SongEntity>
+
+    @Query("SELECT * FROM song_table WHERE albumId = :albumId")
+    suspend fun getSongsByAlbumId(albumId: Long): List<SongEntity>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(songList: List<SongEntity>)
 

@@ -41,7 +41,7 @@ fun PlaylistInfoScreen(
     playlistInfoViewModel: PlaylistInfoViewModel = hiltViewModel(),
 ) {
 
-    val playlist = playlistInfoViewModel.playlist
+    val playlist = playlistInfoViewModel.playlistDetail
 
     val reordableState = rememberReorderableLazyListState(onMove = { from, to ->
         playlistInfoViewModel.onEvent(PlaylistInfoEvent.MoveSong(from.index, to.index))
@@ -155,7 +155,7 @@ fun PlaylistInfoScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlists = mainViewModel.playlists,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             listOf(song)
@@ -167,7 +167,7 @@ fun PlaylistInfoScreen(
                                                                     onPlaylistClick = {
                                                                         mainViewModel.addToPlaylist(
                                                                             listOf(song),
-                                                                            it
+                                                                            it.id
                                                                         )
                                                                         bottomSheetScope.launch {
                                                                             bottomSheetState.hide()

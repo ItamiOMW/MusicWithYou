@@ -1,10 +1,7 @@
 package com.example.musicwithyou.data.local.room.dao
 
 import androidx.room.*
-import com.example.musicwithyou.data.local.room.models.PlaylistEntity
-import com.example.musicwithyou.data.local.room.models.PlaylistWithSongs
-import com.example.musicwithyou.data.local.room.models.SongEntity
-import com.example.musicwithyou.data.local.room.models.SongPlaylistCrossRef
+import com.example.musicwithyou.data.local.room.models.*
 import kotlinx.coroutines.flow.Flow
 
 
@@ -14,6 +11,7 @@ interface PlaylistDao {
     @Transaction
     @Query("SELECT * FROM playlist_table")
     fun getPlaylistsWithSongs(): Flow<List<PlaylistWithSongs>>
+
 
     @Transaction
     @Query("SELECT * FROM playlist_table WHERE id = :id LIMIT 1")
@@ -62,7 +60,7 @@ interface PlaylistDao {
     @Transaction
     suspend fun createPlaylist(playlist: PlaylistEntity, songs: List<SongEntity>) {
         val playlistId = insertPlaylist(playlist)
-        val crossRefs = songs.mapIndexed { index, song  ->
+        val crossRefs = songs.mapIndexed { index, song ->
             SongPlaylistCrossRef(song.id, playlistId, index)
         }
         insertSongPlaylistCrossRefs(crossRefs)
