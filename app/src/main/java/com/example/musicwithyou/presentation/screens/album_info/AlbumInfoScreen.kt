@@ -22,8 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import com.example.musicwithyou.R
+import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.components.SongItem
@@ -78,6 +80,11 @@ fun AlbumInfoScreen(
                                 navController.popBackStack()
                             }
                     )
+                    Text(
+                        text = stringResource(R.string.album),
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(
@@ -124,7 +131,19 @@ fun AlbumInfoScreen(
                             overflow = TextOverflow.Ellipsis,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
-                                //Todo go to artist info screen
+                                navController.navigate(
+                                    route = Screen.ArtistInfoScreen.route +
+                                            "?${Screen.ARTIST_ID_ARG}=${album.artistId}",
+                                ) {
+                                    popUpTo(
+                                        id = navController.currentBackStackEntry?.destination?.id
+                                            ?: navController.graph.findStartDestination().id
+                                    ) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         )
                     }

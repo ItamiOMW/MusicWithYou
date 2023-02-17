@@ -72,4 +72,7 @@
     <string name="delete_from_playlist">Delete from playlist</string>
     <string name="image_of_album_desc">Image of the album</string>
     <string name="album_info">Album • %d Songs • %d</string>
+    <string name="artist_info">%d Albums • %d Songs</string>
+    <string name="close_artist_info_desc">Close Artist Info Screen</string>
+    <string name="artist">Artist</string>
 </resources>

@@ -20,7 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
+import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.ArtistItem
 import com.example.musicwithyou.presentation.components.ArtistsActionsSheetContent
@@ -83,20 +85,19 @@ fun ArtistsPagerScreen(
                                 .background(Color.Transparent)
                                 .animateItemPlacement(animationSpec = tween(500))
                                 .clickable {
-                                    //Todo navigate to artist info
-//                                    navController.navigate(
-//                                        route = Screen.AlbumInfoScreen.route +
-//                                                "?${Screen.ALBUM_ID_ARG}=${album.id}",
-//                                    ) {
-//                                        popUpTo(
-//                                            id = navController.currentBackStackEntry?.destination?.id
-//                                                ?: navController.graph.findStartDestination().id
-//                                        ) {
-//                                            saveState = true
-//                                        }
-//                                        launchSingleTop = true
-//                                        restoreState = true
-//                                    }
+                                    navController.navigate(
+                                        route = Screen.ArtistInfoScreen.route +
+                                                "?${Screen.ARTIST_ID_ARG}=${artist.id}",
+                                    ) {
+                                        popUpTo(
+                                            id = navController.currentBackStackEntry?.destination?.id
+                                                ?: navController.graph.findStartDestination().id
+                                        ) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 },
                             onOptionsClicked = {
                                 bottomSheetScope.launch {

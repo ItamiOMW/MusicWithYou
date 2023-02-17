@@ -12,6 +12,8 @@ sealed class Screen(val route: String) {
 
     object AlbumInfoScreen : Screen(ALBUM_INFO_SCREEN_ROUTE)
 
+    object ArtistInfoScreen : Screen(ARTIST_INFO_SCREEN_ROUTE)
+
 
     companion object {
 
@@ -25,9 +27,13 @@ sealed class Screen(val route: String) {
 
         private const val ALBUM_INFO_SCREEN_ROUTE = "album_info"
 
+        private const val ARTIST_INFO_SCREEN_ROUTE = "artist_info"
+
         const val PLAYLIST_ID_ARG = "playlistId"
 
         const val ALBUM_ID_ARG = "playlistId"
+
+        const val ARTIST_ID_ARG = "artistId"
 
     }
 
