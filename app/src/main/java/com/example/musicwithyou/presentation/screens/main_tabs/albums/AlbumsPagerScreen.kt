@@ -1,5 +1,7 @@
 package com.example.musicwithyou.presentation.screens.main_tabs.albums
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -31,7 +33,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun AlbumsPagerScreen(
     navController: NavController,
@@ -79,6 +81,7 @@ fun AlbumsPagerScreen(
                         AlbumItem(
                             albumPreview = album,
                             modifier = Modifier
+                                .animateItemPlacement(tween(500))
                                 .fillMaxSize()
                                 .padding(5.dp)
                                 .background(
@@ -169,8 +172,6 @@ fun AlbumsPagerScreen(
                                     }
                                     bottomSheetState.show()
                                 }
-
-
                             })
                     }
                 }

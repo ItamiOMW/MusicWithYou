@@ -30,7 +30,8 @@ fun AlbumItem(
 ) {
 
     Column(
-        modifier = modifier
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Box(
             modifier = Modifier
@@ -46,7 +47,8 @@ fun AlbumItem(
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
