@@ -35,6 +35,7 @@ import com.example.musicwithyou.presentation.components.CreatePlaylistDialog
 import com.example.musicwithyou.presentation.components.CustomDrawer
 import com.example.musicwithyou.presentation.components.CustomTopBar
 import com.example.musicwithyou.presentation.ui.theme.MusicWithYouTheme
+import com.example.musicwithyou.utils.UserSettingsManager
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -42,16 +43,20 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var userSettingsManager: UserSettingsManager
 
     @OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MusicWithYouTheme {
-
+            val isDarkTheme = userSettingsManager.isDarkTheme.collectAsState(initial = false)
+            MusicWithYouTheme(darkTheme = isDarkTheme.value) {
                 val permissionsState = rememberPermissionState(
                     permission = Manifest.permission.READ_EXTERNAL_STORAGE
                 )
@@ -206,12 +211,29 @@ class MainActivity : ComponentActivity() {
                             drawerContent = {
                                 CustomDrawer(
                                     items = listOf(
-                                        //Todo add item for future sections( settings and so on )
+                                        //Navigation items
                                     ),
                                     onItemClick = { item ->
-                                        //Todo navigate to item route
+                                        navController.navigate(
+                                            route = item.route,
+                                        ) {
+                                            popUpTo(
+                                                id = navController.currentBackStackEntry?.destination?.id
+                                                    ?: navController.graph.findStartDestination().id
+                                            ) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
                                         drawerScope.launch {
                                             scaffoldState.drawerState.close()
+                                        }
+                                    },
+                                    isDarkTheme = isDarkTheme.value,
+                                    onDarkThemeSwitchCheckedChange = {
+                                        drawerScope.launch {
+                                            userSettingsManager.setIsDarkTheme(!isDarkTheme.value)
                                         }
                                     }
                                 )
@@ -284,4 +306,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 

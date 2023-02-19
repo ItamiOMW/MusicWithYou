@@ -114,7 +114,8 @@ fun MainTabsScreen(
                     text = {
                         Text(
                             tabItem.title,
-                            style = MaterialTheme.typography.body2
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.secondary
                         )
 
                     },
@@ -124,6 +125,7 @@ fun MainTabsScreen(
                             contentDescription = stringResource(
                                 R.string.tab_icon_desc
                             ),
+                            tint = MaterialTheme.colors.secondary,
                             modifier = Modifier.size(20.dp),
                         )
                     }
