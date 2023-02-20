@@ -34,4 +34,4 @@
  
  ## Screenshots
 
-!(https://github.com/ItamiOWM/MusicWithYou/blob/master/images/light/Screenshot_2023-02-20-09-44-43-443_com.example.musicwithyou.jpg)
+![Screen1](https://github.com/ItamiOWM/MusicWithYou/blob/master/images/light/Screenshot_2023-02-20-09-44-43-443_com.example.musicwithyou.jpg)
