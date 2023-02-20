@@ -18,6 +18,9 @@ interface ArtistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(artists: List<ArtistEntity>)
 
+    @Query("DELETE FROM artist_table WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
     @Query("DELETE FROM artist_table")
     suspend fun deleteAll()
 

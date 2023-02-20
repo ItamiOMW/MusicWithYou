@@ -17,8 +17,12 @@ class SongRepositoryImpl @Inject constructor(
 ) : SongRepository {
 
     override suspend fun getSongs(): List<Song> = withContext(Dispatchers.IO) {
-        val songs = contentResolver.getData()
-        songDao.insertAll(songs)
+        val cachedSongIds = songDao.getAllSongs().map { it.id }
+        val songsFromMedia = contentResolver.getData()
+        val songIdsFromMedia = songsFromMedia.map { it.id }
+        val songsToDelete = cachedSongIds.filter { !songIdsFromMedia.contains(it) }
+        songsToDelete.forEach { songDao.deleteById(it) }
+        songDao.insertAll(songsFromMedia)
         songDao.getAllSongs().map { songEntity ->
             songEntity.toSong()
         }

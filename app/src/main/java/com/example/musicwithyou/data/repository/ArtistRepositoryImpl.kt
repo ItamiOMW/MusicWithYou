@@ -24,14 +24,18 @@ class ArtistRepositoryImpl @Inject constructor(
 ) : ArtistRepository {
 
     override suspend fun getArtistPreviews(): List<ArtistPreview> = withContext(Dispatchers.IO) {
-        val artistEntities = artistContentResolver.getData()
-        artistDao.insertAll(artistEntities)
-        artistDao.getArtists().map {  artistEntity ->
+        val artistsFromMedia = artistContentResolver.getData()
+        val artistIdsFromMedia = artistsFromMedia.map { it.id }
+        val cachedArtistsIds = artistDao.getArtists().map { it.id }
+        val artistsToDelete = cachedArtistsIds.filter { !artistIdsFromMedia.contains(it) }
+        artistsToDelete.forEach { artistDao.deleteById(it) }
+        artistDao.insertAll(artistsFromMedia)
+        artistDao.getArtists().map { artistEntity ->
             artistEntity.toArtistPreview()
         }
     }
 
-    override suspend fun getArtistDetailById(id: Long): ArtistDetail? {
+    override suspend fun getArtistDetailById(id: Long): ArtistDetail {
         val songs = songDao.getSongsByArtistId(id).map { songEntity ->
             songEntity.toSong()
         }

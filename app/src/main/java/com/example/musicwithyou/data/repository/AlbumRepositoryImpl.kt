@@ -20,8 +20,12 @@ class AlbumRepositoryImpl @Inject constructor(
 ) : AlbumRepository {
 
     override suspend fun getAlbumPreviews(): List<AlbumPreview> = withContext(Dispatchers.IO) {
-        val albumsToAdd = albumContentResolver.getData()
-        albumDao.insertAll(albumsToAdd)
+        val albumsFromMedia = albumContentResolver.getData()
+        val albumIdsFromMedia = albumsFromMedia.map { it.id }
+        val cachedAlbumIds = albumDao.getAlbums().map { it.id }
+        val albumsToDelete = cachedAlbumIds.filter { !albumIdsFromMedia.contains(it) }
+        albumsToDelete.forEach { albumDao.deleteById(it) }
+        albumDao.insertAll(albumsFromMedia)
         albumDao.getAlbums().map { albumEntity ->
             albumEntity.toAlbumPreview()
         }

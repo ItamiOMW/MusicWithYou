@@ -26,7 +26,7 @@ class PlaylistRepositoryImpl @Inject constructor(
 
     override suspend fun getPlaylistDetail(id: Long): Flow<PlaylistDetail?> {
         return playListDao.getPlaylistWithSongsByIdFlow(id).map {
-            val songs = it?.songs?.map { it.toSong() } ?: emptyList()
+            val songs = it?.songs?.map { songEntity -> songEntity.toSong() } ?: emptyList()
             it?.playlistEntity?.toPlaylist(songs)
         }
     }
@@ -51,11 +51,11 @@ class PlaylistRepositoryImpl @Inject constructor(
         playListDao.updatePlaylist(playlistEntity)
     }
 
-    override suspend fun deletePlaylist(playlist: PlaylistPreview) {
-        if (playlist.isDefault) {
+    override suspend fun deletePlaylist(playlistPreview: PlaylistPreview) {
+        if (playlistPreview.isDefault) {
             return
         }
-        playListDao.deletePlaylist(playlist.id)
+        playListDao.deletePlaylist(playlistPreview.id)
     }
 
     override suspend fun addSongsToPlaylist(songs: List<Song>, playlistId: Long) {
@@ -81,14 +81,7 @@ class PlaylistRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addSongsToFavoritePlaylist(songs: List<Song>) {
-        val crossRef = songs.map {
-            SongPlaylistCrossRef(
-                it.id,
-                FAVORITE_PLAYLIST_ID
-            )
-        }
-        playListDao.insertSongPlaylistCrossRefs(crossRef)
-
+        addSongsToPlaylist(songs, FAVORITE_PLAYLIST_ID)
     }
 
     override suspend fun deleteSongsFromFavoritePlaylist(songs: List<Song>) {
