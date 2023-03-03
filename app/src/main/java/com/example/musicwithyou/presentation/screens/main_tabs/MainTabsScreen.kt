@@ -1,6 +1,9 @@
 package com.example.musicwithyou.presentation.screens.main_tabs
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -11,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsPagerScreen
 import com.example.musicwithyou.presentation.screens.main_tabs.albums.AlbumsViewModel
 import com.example.musicwithyou.presentation.screens.main_tabs.artists.ArtistsPagerScreen
@@ -136,7 +139,8 @@ fun MainTabsScreen(
             count = mainTabs.size,
             state = pagerState,
             flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            key = { it }
         ) { tabIndex ->
             mainTabs[tabIndex].screen()
         }

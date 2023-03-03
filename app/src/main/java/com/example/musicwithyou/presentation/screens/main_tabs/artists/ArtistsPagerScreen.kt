@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
@@ -26,7 +25,7 @@ import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.ArtistItem
 import com.example.musicwithyou.presentation.components.ArtistsActionsSheetContent
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -39,7 +38,7 @@ import kotlinx.coroutines.launch
 fun ArtistsPagerScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    artistsViewModel: ArtistsViewModel = hiltViewModel(),
+    artistsViewModel: ArtistsViewModel,
 ) {
 
     //States
@@ -86,8 +85,7 @@ fun ArtistsPagerScreen(
                                 .animateItemPlacement(animationSpec = tween(500))
                                 .clickable {
                                     navController.navigate(
-                                        route = Screen.ArtistInfoScreen.route +
-                                                "?${Screen.ARTIST_ID_ARG}=${artist.id}",
+                                        route = Screen.ArtistInfoScreen.getRouteWithArgs(artist.id),
                                     ) {
                                         popUpTo(
                                             id = navController.currentBackStackEntry?.destination?.id
@@ -134,7 +132,7 @@ fun ArtistsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             artist

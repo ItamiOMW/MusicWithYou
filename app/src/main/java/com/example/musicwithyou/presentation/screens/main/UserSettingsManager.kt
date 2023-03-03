@@ -1,6 +1,5 @@
-package com.example.musicwithyou.utils
+package com.example.musicwithyou.presentation.screens.main
 
-import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

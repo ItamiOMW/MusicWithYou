@@ -24,8 +24,8 @@ import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
-import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.example.musicwithyou.utils.timestampToDuration
@@ -43,7 +43,7 @@ fun PlayingNowScreen(
 
     val currentSong = mainViewModel.currentPlayingSong.value
 
-    val isCurrentSongFavorite = mainViewModel.favoriteSongs.contains(currentSong)
+    val isCurrentSongFavorite = mainViewModel.favoriteSongs.value.contains(currentSong)
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -56,7 +56,7 @@ fun PlayingNowScreen(
     var customSheetContent by remember { mutableStateOf(sheetInitialContent) }
 
     val songProgress by animateFloatAsState(
-        targetValue = mainViewModel.currentSongProgress
+        targetValue = mainViewModel.currentSongProgress.value
     )
 
 
@@ -77,39 +77,49 @@ fun PlayingNowScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_down),
-                        contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                    IconButton(
                         modifier = Modifier
-                            .size(35.dp)
-                            .clickable {
-                                navController.popBackStack()
-                            }
-                    )
+                            .size(35.dp),
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_down),
+                            contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                            modifier = Modifier.size(35.dp)
+                        )
+                    }
                     Text(
                         text = stringResource(id = R.string.now_playing_title),
                         style = MaterialTheme.typography.subtitle2
                     )
-                    Icon(
-                        painter = painterResource(id = R.drawable.playlist),
-                        contentDescription = stringResource(R.string.queue_songs_desc),
+                    IconButton(
                         modifier = Modifier
-                            .size(25.dp)
-                            .clickable {
-                                navController.navigate(
-                                    Screen.CurrentQueueScreen.route
+                            .size(25.dp),
+                        onClick = {
+                            navController.navigate(
+                                Screen.CurrentQueueScreen.fullRoute
+                            ) {
+                                popUpTo(
+                                    id = navController.currentDestination?.id
+                                        ?: navController.graph.findStartDestination().id
                                 ) {
-                                    popUpTo(
-                                        id = navController.currentDestination?.id
-                                            ?: navController.graph.findStartDestination().id
-                                    ) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+                                    saveState = true
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                    )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.playlist),
+                            contentDescription = stringResource(R.string.queue_songs_desc),
+                            modifier = Modifier
+                                .size(25.dp)
+
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(25.dp))
                 AsyncImage(
@@ -126,21 +136,28 @@ fun PlayingNowScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isCurrentSongFavorite) R.drawable.is_favorite
-                            else R.drawable.isnt_favorite
-                        ),
-                        contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                    IconButton(
                         modifier = Modifier
                             .weight(0.1f)
                             .align(Alignment.Top)
                             .padding(top = 5.dp)
-                            .size(25.dp)
-                            .clickable {
-                                mainViewModel.changeFavoriteState(currentSong)
-                            }
-                    )
+                            .size(25.dp),
+                        onClick = {
+                            mainViewModel.changeFavoriteState(currentSong)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (isCurrentSongFavorite) R.drawable.is_favorite
+                                else R.drawable.isnt_favorite
+                            ),
+                            contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                            modifier = Modifier
+                                .align(Alignment.Top)
+                                .size(25.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(15.dp))
                     Column(
                         modifier = Modifier.weight(1f)
@@ -162,74 +179,81 @@ fun PlayingNowScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(15.dp))
-                    Icon(
-                        painter = painterResource(id = R.drawable.options),
-                        contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                    IconButton(
                         modifier = Modifier
                             .weight(0.1f)
                             .align(Alignment.Top)
                             .padding(top = 5.dp)
-                            .size(25.dp)
-                            .clickable {
-                                bottomSheetScope.launch {
-                                    customSheetContent = {
-                                        SongActionsSheetContent(
-                                            song = currentSong,
-                                            items = listOf(
-                                                ActionItem(
-                                                    actionTitle = stringResource(R.string.add_to_playlist),
-                                                    itemClicked = {
-                                                        customSheetContent = {
-                                                            AddToPlaylistSheetContent(
-                                                                modifier = Modifier
-                                                                    .fillMaxHeight(0.5f),
-                                                                playlistPreviews = mainViewModel.playlistPreviews,
-                                                                onCreateNewPlaylist = {
-                                                                    mainViewModel.onShowCreatePlaylistDialog(
-                                                                        listOf(currentSong)
-                                                                    )
-                                                                    bottomSheetScope.launch {
-                                                                        bottomSheetState.hide()
-                                                                    }
-                                                                },
-                                                                onPlaylistClick = {
-                                                                    mainViewModel.addToPlaylist(
-                                                                        listOf(currentSong),
-                                                                        it.id
-                                                                    )
-                                                                    bottomSheetScope.launch {
-                                                                        bottomSheetState.hide()
-                                                                    }
+                            .size(25.dp),
+                        onClick = {
+                            bottomSheetScope.launch {
+                                customSheetContent = {
+                                    SongActionsSheetContent(
+                                        song = currentSong,
+                                        items = listOf(
+                                            ActionItem(
+                                                actionTitle = stringResource(R.string.add_to_playlist),
+                                                itemClicked = {
+                                                    customSheetContent = {
+                                                        AddToPlaylistSheetContent(
+                                                            modifier = Modifier
+                                                                .fillMaxHeight(0.5f),
+                                                            playlistPreviews = mainViewModel.playlistPreviews.value,
+                                                            onCreateNewPlaylist = {
+                                                                mainViewModel.onShowCreatePlaylistDialog(
+                                                                    listOf(currentSong)
+                                                                )
+                                                                bottomSheetScope.launch {
+                                                                    bottomSheetState.hide()
                                                                 }
-                                                            )
-                                                        }
-                                                        bottomSheetScope.launch {
-                                                            bottomSheetState.show()
-                                                        }
-                                                    },
-                                                    iconId = R.drawable.add_to_playlist
-                                                ),
-                                                ActionItem(
-                                                    actionTitle = stringResource(R.string.install_as_ringtone),
-                                                    itemClicked = {
-                                                        //Todo install song as ringtone
-                                                    },
-                                                    iconId = R.drawable.bell
-                                                ),
-                                                ActionItem(
-                                                    actionTitle = stringResource(R.string.delete_from_device),
-                                                    itemClicked = {
-                                                        //Todo delete from device
-                                                    },
-                                                    iconId = R.drawable.delete
-                                                )
+                                                            },
+                                                            onPlaylistClick = {
+                                                                mainViewModel.addToPlaylist(
+                                                                    listOf(currentSong),
+                                                                    it.id
+                                                                )
+                                                                bottomSheetScope.launch {
+                                                                    bottomSheetState.hide()
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+                                                    bottomSheetScope.launch {
+                                                        bottomSheetState.show()
+                                                    }
+                                                },
+                                                iconId = R.drawable.add_to_playlist
+                                            ),
+                                            ActionItem(
+                                                actionTitle = stringResource(R.string.install_as_ringtone),
+                                                itemClicked = {
+                                                    //Todo install song as ringtone
+                                                },
+                                                iconId = R.drawable.bell
+                                            ),
+                                            ActionItem(
+                                                actionTitle = stringResource(R.string.delete_from_device),
+                                                itemClicked = {
+                                                    //Todo delete from device
+                                                },
+                                                iconId = R.drawable.delete
                                             )
                                         )
-                                    }
-                                    bottomSheetState.show()
+                                    )
                                 }
+                                bottomSheetState.show()
                             }
-                    )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.options),
+                            contentDescription = stringResource(id = R.string.close_current_playing_desc),
+                            modifier = Modifier
+                                .align(Alignment.Top)
+                                .size(25.dp)
+                        )
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(40.dp))
                 Column(
@@ -258,7 +282,7 @@ fun PlayingNowScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = mainViewModel.currentPlaybackPosition.timestampToDuration(),
+                            text = mainViewModel.currentPlaybackPosition.value.timestampToDuration(),
                             style = MaterialTheme.typography.body2,
                         )
                         Text(
@@ -272,29 +296,42 @@ fun PlayingNowScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.shuffle),
-                        contentDescription = stringResource(R.string.shuffle_mode_desc),
-                        tint = if (mainViewModel.shuffleMode.value == PlaybackStateCompat.SHUFFLE_MODE_NONE)
-                            MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.secondary,
+                    IconButton(
                         modifier = Modifier
                             .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                mainViewModel.shuffleMode()
-                            }
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.skip_back),
-                        contentDescription = stringResource(R.string.shuffle_mode_desc),
-                        tint = MaterialTheme.colors.secondary,
+                            .align(Alignment.CenterVertically),
+                        onClick = {
+                            mainViewModel.shuffleMode()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.shuffle),
+                            contentDescription = stringResource(R.string.shuffle_mode_desc),
+                            tint = if (mainViewModel.shuffleMode.value == PlaybackStateCompat.SHUFFLE_MODE_NONE)
+                                MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.secondary,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                    IconButton(
                         modifier = Modifier
                             .size(35.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                mainViewModel.skipToPrevious()
-                            }
-                    )
+                            .align(Alignment.CenterVertically),
+                        onClick = {
+                            mainViewModel.skipToPrevious()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.skip_back),
+                            contentDescription = stringResource(R.string.shuffle_mode_desc),
+                            tint = MaterialTheme.colors.secondary,
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
                     Box(
                         modifier = Modifier
                             .size(60.dp)
@@ -321,38 +358,51 @@ fun PlayingNowScreen(
                                 .fillMaxSize(0.4f)
                         )
                     }
-                    Icon(
-                        painter = painterResource(id = R.drawable.skip_next),
-                        contentDescription = stringResource(R.string.shuffle_mode_desc),
-                        tint = MaterialTheme.colors.secondary,
+                    IconButton(
                         modifier = Modifier
-                            .size(35.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                mainViewModel.skipToNext()
-                            }
-                    )
-                    Icon(
-                        painter = painterResource(
-                            id = when (mainViewModel.repeatMode.value) {
-                                PlaybackStateCompat.REPEAT_MODE_ONE -> R.drawable.repeat_single
-                                else -> R.drawable.repeat_all
-                            }
-                        ),
-                        contentDescription = stringResource(R.string.shuffle_mode_desc),
-                        tint = if (mainViewModel.repeatMode.value == PlaybackStateCompat.REPEAT_MODE_NONE)
-                            MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.secondary,
+                            .size(40.dp)
+                            .align(Alignment.CenterVertically),
+                        onClick = {
+                            mainViewModel.skipToNext()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.skip_next),
+                            contentDescription = stringResource(R.string.shuffle_mode_desc),
+                            tint = MaterialTheme.colors.secondary,
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
+
+                    IconButton(
                         modifier = Modifier
                             .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                mainViewModel.repeatMode()
-                            }
-                    )
+                            .align(Alignment.CenterVertically),
+                        onClick = { mainViewModel.repeatMode() }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = when (mainViewModel.repeatMode.value) {
+                                    PlaybackStateCompat.REPEAT_MODE_ONE -> R.drawable.repeat_single
+                                    else -> R.drawable.repeat_all
+                                }
+                            ),
+                            contentDescription = stringResource(R.string.shuffle_mode_desc),
+                            tint = if (mainViewModel.repeatMode.value == PlaybackStateCompat.REPEAT_MODE_NONE)
+                                MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.secondary,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
                 }
             }
         }
     } else {
-        navController.navigateUp()
+        navController.popBackStack()
     }
 }

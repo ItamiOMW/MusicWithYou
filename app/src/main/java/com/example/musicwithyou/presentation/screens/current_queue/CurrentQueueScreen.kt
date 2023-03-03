@@ -25,7 +25,7 @@ import com.example.musicwithyou.presentation.components.drag_drop.ReorderableIte
 import com.example.musicwithyou.presentation.components.drag_drop.detectReorderAfterLongPress
 import com.example.musicwithyou.presentation.components.drag_drop.rememberReorderableLazyListState
 import com.example.musicwithyou.presentation.components.drag_drop.reorderable
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -67,22 +67,29 @@ fun CurrentQueueScreen(
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_left),
-                    contentDescription = stringResource(R.string.close_current_queue_desc),
+                IconButton(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
-                        .size(35.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        }
-                )
+                        .size(35.dp),
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_left),
+                        contentDescription = stringResource(R.string.close_current_queue_desc),
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .size(35.dp)
+                    )
+                }
                 Text(
                     text = stringResource(R.string.current_queue_title),
                     style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+            Spacer(modifier = Modifier.height(10.dp))
             LazyColumn(
                 state = reordableState.listState,
                 modifier = Modifier
@@ -126,7 +133,7 @@ fun CurrentQueueScreen(
                                                             AddToPlaylistSheetContent(
                                                                 modifier = Modifier
                                                                     .fillMaxHeight(0.5f),
-                                                                playlistPreviews = mainViewModel.playlistPreviews,
+                                                                playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                 onCreateNewPlaylist = {
                                                                     mainViewModel.onShowCreatePlaylistDialog(
                                                                         listOf(song)

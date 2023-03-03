@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -35,8 +36,9 @@ fun AddToPlaylistSheetContent(
             style = MaterialTheme.typography.subtitle1,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
+            modifier = Modifier.padding(start = 15.dp, top = 15.dp, bottom = 5.dp)
         )
+        Divider(modifier = Modifier.fillMaxWidth())
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

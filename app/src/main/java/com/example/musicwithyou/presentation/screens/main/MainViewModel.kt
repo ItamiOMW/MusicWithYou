@@ -1,11 +1,9 @@
-package com.example.musicwithyou.presentation.screens
+package com.example.musicwithyou.presentation.screens.main
 
 import android.app.Application
 import android.support.v4.media.MediaBrowserCompat
 import android.widget.Toast
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicwithyou.R
@@ -45,19 +43,19 @@ class MainViewModel @Inject constructor(
 
     val isSongPlaying = serviceConnection.isPlaying
 
-    var favoriteSongs by mutableStateOf(emptyList<Song>())
+    var favoriteSongs = mutableStateOf(emptyList<Song>())
         private set
 
-    var currentPlaybackPosition by mutableStateOf(0L)
+    var currentPlaybackPosition = mutableStateOf(0L)
         private set
 
-    var currentSongProgress by mutableStateOf(0f)
+    var currentSongProgress = mutableStateOf(0f)
         private set
 
-    var showCreatePlaylistDialog by mutableStateOf(false)
+    var showCreatePlaylistDialog = mutableStateOf(false)
         private set
 
-    var playlistPreviews by mutableStateOf(emptyList<PlaylistPreview>())
+    var playlistPreviews = mutableStateOf(emptyList<PlaylistPreview>())
         private set
 
     private var songsToCreatePlaylist: List<Song>? = null
@@ -92,7 +90,7 @@ class MainViewModel @Inject constructor(
                 if (it) {
                     rootMediaId = serviceConnection.rootMediaId
                     serviceConnection.playBackState.value?.apply {
-                        currentPlaybackPosition = position
+                        currentPlaybackPosition.value = position
                     }
                     serviceConnection.subscribe(rootMediaId, subscriptionCallback)
                 }
@@ -104,7 +102,7 @@ class MainViewModel @Inject constructor(
 
     fun changeFavoriteState(song: Song) {
         viewModelScope.launch {
-            if (favoriteSongs.contains(song)) {
+            if (favoriteSongs.value.contains(song)) {
                 playlistUseCases.deleteSongsFromFavoritePlaylist(listOf(song))
             } else {
                 playlistUseCases.addSongsToFavoritePlaylist(listOf(song))
@@ -302,14 +300,14 @@ class MainViewModel @Inject constructor(
 
     fun onShowCreatePlaylistDialog(songs: List<Song>) {
         songsToCreatePlaylist = songs
-        showCreatePlaylistDialog = true
+        showCreatePlaylistDialog.value = true
     }
 
     fun onShowCreatePlaylistDialog(albumPreview: AlbumPreview) {
         viewModelScope.launch {
             val albumDetail = albumUseCases.getAlbumDetailById(albumPreview.id)
             songsToCreatePlaylist = albumDetail?.songs
-            showCreatePlaylistDialog = true
+            showCreatePlaylistDialog.value = true
         }
     }
 
@@ -317,7 +315,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val artistDetail = artistUseCases.getArtistDetail(artistPreview.id)
             songsToCreatePlaylist = artistDetail?.songs
-            showCreatePlaylistDialog = true
+            showCreatePlaylistDialog.value = true
         }
     }
 
@@ -325,7 +323,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             playlistUseCases.getPlaylistDetail(playlistPreview.id).collect {
                 songsToCreatePlaylist = it?.songs
-                showCreatePlaylistDialog = true
+                showCreatePlaylistDialog.value = true
                 cancel()
             }
         }
@@ -333,13 +331,13 @@ class MainViewModel @Inject constructor(
 
     fun onDismissCreatePlaylistDialog() {
         songsToCreatePlaylist = null
-        showCreatePlaylistDialog = false
+        showCreatePlaylistDialog.value = false
     }
 
     private fun collectFavoriteSongs() {
         viewModelScope.launch {
             playlistUseCases.getFavoritePlaylistSongs().collect { list ->
-                favoriteSongs = list
+                favoriteSongs.value = list
             }
         }
     }
@@ -347,7 +345,7 @@ class MainViewModel @Inject constructor(
     private fun collectPlaylists() {
         viewModelScope.launch {
             playlistUseCases.getPlaylistPreviews().collect { list ->
-                playlistPreviews = list
+                playlistPreviews.value = list
             }
         }
     }
@@ -356,13 +354,13 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val position = playbackState.value?.currentPosition ?: 0
 
-            if (currentPlaybackPosition != position) {
-                currentPlaybackPosition = position
+            if (currentPlaybackPosition.value != position) {
+                currentPlaybackPosition.value = position
             }
 
             if (currentDuration > 0) {
-                currentSongProgress = (
-                        currentPlaybackPosition.toFloat() / currentDuration.toFloat() * 100f)
+                currentSongProgress.value = (
+                        currentPlaybackPosition.value.toFloat() / currentDuration.toFloat() * 100f)
             }
             delay(PLAYBACK_UPDATE_INTERVAL)
 

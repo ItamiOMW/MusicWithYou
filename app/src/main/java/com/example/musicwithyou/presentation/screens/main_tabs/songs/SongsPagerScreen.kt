@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.musicwithyou.R
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
-import com.example.musicwithyou.presentation.screens.MainViewModel
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.components.SongItem
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.screens.main_tabs.songs.components.SongOrderSectionSheetContent
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
@@ -41,7 +40,8 @@ fun SongsPagerScreen(
 ) {
 
     //States
-    val songs = songsViewModel.state.songs
+    val state = songsViewModel.state
+    val songs = state.songs
     val songOrder = songsViewModel.state.songOrder
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = songsViewModel.state.isRefreshing
@@ -93,58 +93,72 @@ fun SongsPagerScreen(
                             .align(Alignment.CenterVertically)
                             .padding(end = 5.dp)
                     )
-                    BasicText(
+                    Text(
                         text = stringResource(R.string.shuffle, songs.size),
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
                 Row() {
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.sort
-                        ),
-                        contentDescription = stringResource(R.string.sort_song_icon_desc),
-                        tint = MaterialTheme.colors.secondaryVariant,
+                    IconButton(
                         modifier = Modifier
                             .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                customSheetContent = {
-                                    SongOrderSectionSheetContent(
-                                        songOrder = songOrder,
-                                        onOrderChange = { newOrder ->
-                                            songsViewModel.onEvent(SongsEvent.OrderChange(newOrder))
-                                            bottomSheetScope.launch {
-                                                bottomSheetState.hide()
-                                            }
-                                        },
-                                        onCancel = {
-                                            bottomSheetScope.launch {
-                                                bottomSheetState.hide()
-                                            }
+                            .align(Alignment.CenterVertically),
+                        onClick = {
+                            customSheetContent = {
+                                SongOrderSectionSheetContent(
+                                    songOrder = songOrder,
+                                    onOrderChange = { newOrder ->
+                                        songsViewModel.onEvent(SongsEvent.OrderChange(newOrder))
+                                        bottomSheetScope.launch {
+                                            bottomSheetState.hide()
                                         }
-                                    )
-                                }
-                                bottomSheetScope.launch {
-                                    bottomSheetState.show()
-                                }
+                                    },
+                                    onCancel = {
+                                        bottomSheetScope.launch {
+                                            bottomSheetState.hide()
+                                        }
+                                    }
+                                )
                             }
-                    )
+                            bottomSheetScope.launch {
+                                bottomSheetState.show()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.sort
+                            ),
+                            contentDescription = stringResource(R.string.sort_song_icon_desc),
+                            tint = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(10.dp))
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.picker
-                        ),
-                        contentDescription = stringResource(R.string.songs_picker_desc),
-                        tint = MaterialTheme.colors.secondaryVariant,
+                    IconButton(
                         modifier = Modifier
                             .size(25.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable {
-                                //Todo launch song picker screen
-                            }
-                    )
+                            .align(Alignment.CenterVertically),
+                        onClick = {
+                            //Todo launch song picker screen
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.picker
+                            ),
+                            contentDescription = stringResource(R.string.songs_picker_desc),
+                            tint = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
                 }
             }
             SwipeRefresh(
@@ -209,7 +223,7 @@ fun SongsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             listOf(song)

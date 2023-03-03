@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +26,7 @@ import com.example.musicwithyou.presentation.components.drag_drop.ReorderableIte
 import com.example.musicwithyou.presentation.components.drag_drop.detectReorderAfterLongPress
 import com.example.musicwithyou.presentation.components.drag_drop.rememberReorderableLazyListState
 import com.example.musicwithyou.presentation.components.drag_drop.reorderable
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -70,16 +69,23 @@ fun PlaylistInfoScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_left),
-                        contentDescription = stringResource(R.string.close_playlist_info_desc),
+                    IconButton(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .size(35.dp)
-                            .clickable {
-                                navController.popBackStack()
-                            }
-                    )
+                            .size(35.dp),
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_left),
+                            contentDescription = stringResource(R.string.close_playlist_info_desc),
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .size(35.dp)
+                        )
+                    }
+
                     Text(
                         text = playlist.title,
                         style = MaterialTheme.typography.subtitle1,
@@ -106,7 +112,7 @@ fun PlaylistInfoScreen(
                             .align(Alignment.CenterVertically)
                             .padding(end = 5.dp)
                     )
-                    BasicText(
+                    Text(
                         text = stringResource(R.string.shuffle, playlist.songs.size),
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -155,7 +161,7 @@ fun PlaylistInfoScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             listOf(song)

@@ -17,14 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.Screen
-import com.example.musicwithyou.navigation.Screen.Companion.PLAYLIST_ID_ARG
 import com.example.musicwithyou.presentation.components.*
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -35,7 +33,7 @@ import kotlinx.coroutines.launch
 fun PlaylistsPagerScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    playlistsViewModel: PlaylistsViewModel = hiltViewModel(),
+    playlistsViewModel: PlaylistsViewModel,
 ) {
 
     //States
@@ -100,21 +98,28 @@ fun PlaylistsPagerScreen(
                     style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-                Icon(
-                    painter = painterResource(
-                        id = R.drawable.add
-                    ),
-                    contentDescription = stringResource(R.string.songs_picker_desc),
-                    tint = MaterialTheme.colors.secondaryVariant,
+                IconButton(
                     modifier = Modifier
                         .size(25.dp)
-                        .align(Alignment.CenterVertically)
-                        .clickable {
-                            mainViewModel.onShowCreatePlaylistDialog(
-                                emptyList()
-                            )
-                        }
-                )
+                        .align(Alignment.CenterVertically),
+                    onClick = {
+                        mainViewModel.onShowCreatePlaylistDialog(
+                            emptyList()
+                        )
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.add
+                        ),
+                        contentDescription = stringResource(R.string.songs_picker_desc),
+                        tint = MaterialTheme.colors.secondaryVariant,
+                        modifier = Modifier
+                            .size(25.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
@@ -131,8 +136,7 @@ fun PlaylistsPagerScreen(
                             .animateItemPlacement(animationSpec = tween(500))
                             .clickable {
                                 navController.navigate(
-                                    route = Screen.PlaylistInfoScreen.route +
-                                            "?$PLAYLIST_ID_ARG=${playlist.id}",
+                                    route = Screen.PlaylistInfoScreen.getRouteWithArgs(playlist.id),
                                 ) {
                                     popUpTo(
                                         id = navController.currentBackStackEntry?.destination?.id
