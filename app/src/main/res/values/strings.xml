@@ -63,7 +63,7 @@
     <string name="create">Create</string>
     <string name="title_is_empty">Title is empty</string>
     <string name="delete">Delete</string>
-    <string name="delete_playlist_question">Delete playlist %d ?</string>
+    <string name="delete_playlist_question">Delete playlist %s ?</string>
     <string name="renaming_playlist">Renaming a playlist</string>
     <string name="rename">Rename</string>
     <string name="create_new_playlist">Create new playlist</string>

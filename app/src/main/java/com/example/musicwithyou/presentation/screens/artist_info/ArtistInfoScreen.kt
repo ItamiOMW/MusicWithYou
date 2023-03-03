@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +28,7 @@ import coil.compose.AsyncImage
 import com.example.musicwithyou.R
 import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.*
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -71,16 +70,23 @@ fun ArtistInfoScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_left),
-                        contentDescription = stringResource(R.string.close_artist_info_desc),
+                    IconButton(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .size(35.dp)
-                            .clickable {
-                                navController.popBackStack()
-                            }
-                    )
+                            .size(35.dp),
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_left),
+                            contentDescription = stringResource(R.string.close_artist_info_desc),
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .size(35.dp)
+                        )
+                    }
+
                     Text(
                         text = stringResource(R.string.artist),
                         style = MaterialTheme.typography.subtitle2,
@@ -146,8 +152,7 @@ fun ArtistInfoScreen(
                                 )
                                 .clickable {
                                     navController.navigate(
-                                        route = Screen.AlbumInfoScreen.route +
-                                                "?${Screen.ALBUM_ID_ARG}=${album.id}",
+                                        route = Screen.AlbumInfoScreen.getRouteWithArgs(album.id),
                                     ) {
                                         popUpTo(
                                             id = navController.currentBackStackEntry?.destination?.id
@@ -196,7 +201,7 @@ fun ArtistInfoScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             album
@@ -253,7 +258,7 @@ fun ArtistInfoScreen(
                                 .align(Alignment.CenterVertically)
                                 .padding(end = 5.dp)
                         )
-                        BasicText(
+                        Text(
                             text = stringResource(R.string.shuffle, artistDetail.songs.size),
                             style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -316,7 +321,7 @@ fun ArtistInfoScreen(
                                                                     AddToPlaylistSheetContent(
                                                                         modifier = Modifier
                                                                             .fillMaxHeight(0.5f),
-                                                                        playlistPreviews = mainViewModel.playlistPreviews,
+                                                                        playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                         onCreateNewPlaylist = {
                                                                             mainViewModel.onShowCreatePlaylistDialog(
                                                                                 listOf(song)

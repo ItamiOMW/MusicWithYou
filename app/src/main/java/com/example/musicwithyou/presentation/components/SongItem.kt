@@ -1,10 +1,9 @@
 package com.example.musicwithyou.presentation.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -67,7 +66,7 @@ fun SongItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                 )
-                Row() {
+                Row {
                     Text(
                         text = song.artistName,
                         style = MaterialTheme.typography.body2,
@@ -113,19 +112,25 @@ fun SongItem(
                         .weight(1f)
                         .align(Alignment.CenterVertically),
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.options),
-                        contentDescription = stringResource(R.string.options_desc),
-                        tint = MaterialTheme.colors.secondaryVariant,
+                    IconButton(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .size(30.dp)
-                            .padding(end = 5.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                onOptionsClicked(song)
-                            }
-                    )
+                            .padding(end = 5.dp),
+                        onClick = {
+                            onOptionsClicked(song)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.options),
+                            contentDescription = stringResource(R.string.options_desc),
+                            tint = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(30.dp)
+                        )
+                    }
+
                 }
             }
         }

@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.musicwithyou.R
@@ -25,7 +24,7 @@ import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.AlbumActionsSheetContent
 import com.example.musicwithyou.presentation.components.AlbumItem
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -38,7 +37,7 @@ import kotlinx.coroutines.launch
 fun AlbumsPagerScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    albumsViewModel: AlbumsViewModel = hiltViewModel(),
+    albumsViewModel: AlbumsViewModel,
 ) {
 
     //States
@@ -90,8 +89,7 @@ fun AlbumsPagerScreen(
                                 )
                                 .clickable {
                                     navController.navigate(
-                                        route = Screen.AlbumInfoScreen.route +
-                                                "?${Screen.ALBUM_ID_ARG}=${album.id}",
+                                        route = Screen.AlbumInfoScreen.getRouteWithArgs(album.id),
                                     ) {
                                         popUpTo(
                                             id = navController.currentBackStackEntry?.destination?.id
@@ -140,7 +138,7 @@ fun AlbumsPagerScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             album

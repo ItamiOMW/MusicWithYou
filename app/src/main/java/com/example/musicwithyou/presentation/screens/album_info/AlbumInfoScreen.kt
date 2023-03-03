@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +28,7 @@ import com.example.musicwithyou.navigation.Screen
 import com.example.musicwithyou.presentation.components.AddToPlaylistSheetContent
 import com.example.musicwithyou.presentation.components.SongActionsSheetContent
 import com.example.musicwithyou.presentation.components.SongItem
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.utils.ActionItem
 import com.example.musicwithyou.utils.EMPTY_STRING
 import kotlinx.coroutines.launch
@@ -70,16 +69,22 @@ fun AlbumInfoScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_left),
-                        contentDescription = stringResource(R.string.close_playlist_info_desc),
+                    IconButton(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .size(35.dp)
-                            .clickable {
-                                navController.popBackStack()
-                            }
-                    )
+                            .size(35.dp),
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_left),
+                            contentDescription = stringResource(R.string.close_playlist_info_desc),
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .size(35.dp)
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.album),
                         style = MaterialTheme.typography.subtitle2,
@@ -132,8 +137,7 @@ fun AlbumInfoScreen(
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
                                 navController.navigate(
-                                    route = Screen.ArtistInfoScreen.route +
-                                            "?${Screen.ARTIST_ID_ARG}=${album.artistId}",
+                                    route = Screen.ArtistInfoScreen.getRouteWithArgs(album.artistId),
                                 ) {
                                     popUpTo(
                                         id = navController.currentBackStackEntry?.destination?.id
@@ -167,7 +171,7 @@ fun AlbumInfoScreen(
                             .align(Alignment.CenterVertically)
                             .padding(end = 5.dp)
                     )
-                    BasicText(
+                    Text(
                         text = stringResource(R.string.shuffle, album.songs.size),
                         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondaryVariant),
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -229,7 +233,7 @@ fun AlbumInfoScreen(
                                                                 AddToPlaylistSheetContent(
                                                                     modifier = Modifier
                                                                         .fillMaxHeight(0.5f),
-                                                                    playlistPreviews = mainViewModel.playlistPreviews,
+                                                                    playlistPreviews = mainViewModel.playlistPreviews.value,
                                                                     onCreateNewPlaylist = {
                                                                         mainViewModel.onShowCreatePlaylistDialog(
                                                                             listOf(song)

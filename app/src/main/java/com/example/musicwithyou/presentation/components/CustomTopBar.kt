@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ fun CustomTopBar(
     onSearchFieldClicked: () -> Unit,
 ) {
     if (isVisible) {
-        
+
         TopAppBar(
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = MaterialTheme.colors.onPrimary,
@@ -42,17 +43,24 @@ fun CustomTopBar(
                     .fillMaxHeight()
                     .padding(10.dp),
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.navigation),
-                    contentDescription = stringResource(R.string.drawer_desc),
-                    tint = MaterialTheme.colors.secondary,
+                IconButton(
                     modifier = Modifier
                         .size(26.dp)
-                        .align(Alignment.CenterVertically)
-                        .clickable {
-                            onNavigationIconClicked()
-                        }
-                )
+                        .align(Alignment.CenterVertically),
+                    onClick = {
+                        onNavigationIconClicked()
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.navigation),
+                        contentDescription = stringResource(R.string.drawer_desc),
+                        tint = MaterialTheme.colors.secondary,
+                        modifier = Modifier
+                            .size(26.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+
                 Spacer(modifier = Modifier.width(10.dp))
                 Box(
                     modifier = Modifier
@@ -78,6 +86,6 @@ fun CustomTopBar(
                 }
             }
         }
-        
+
     }
 }

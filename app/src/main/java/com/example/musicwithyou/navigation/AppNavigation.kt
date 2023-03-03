@@ -9,7 +9,7 @@ import androidx.navigation.navArgument
 import com.example.musicwithyou.navigation.Screen.Companion.ALBUM_ID_ARG
 import com.example.musicwithyou.navigation.Screen.Companion.ARTIST_ID_ARG
 import com.example.musicwithyou.navigation.Screen.Companion.PLAYLIST_ID_ARG
-import com.example.musicwithyou.presentation.screens.MainViewModel
+import com.example.musicwithyou.presentation.screens.main.MainViewModel
 import com.example.musicwithyou.presentation.screens.album_info.AlbumInfoScreen
 import com.example.musicwithyou.presentation.screens.artist_info.ArtistInfoScreen
 import com.example.musicwithyou.presentation.screens.current_queue.CurrentQueueScreen
@@ -28,15 +28,15 @@ fun AppNavigation(
 ) {
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screen.MainTabsScreen.route
+        startDestination = Screen.MainTabsScreen.fullRoute
     ) {
         composable(
-            Screen.MainTabsScreen.route,
+            Screen.MainTabsScreen.fullRoute,
         ) {
             MainTabsScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            Screen.PlayingNowScreen.route,
+            Screen.PlayingNowScreen.fullRoute,
             enterTransition = {
                 slideInVertically(initialOffsetY = { it }, animationSpec = tween(500))
                     .plus(fadeIn(tween(500)))
@@ -57,7 +57,7 @@ fun AppNavigation(
             PlayingNowScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            Screen.CurrentQueueScreen.route,
+            Screen.CurrentQueueScreen.fullRoute,
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it }, animationSpec = tween(500)
@@ -82,7 +82,7 @@ fun AppNavigation(
             CurrentQueueScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            route = Screen.PlaylistInfoScreen.route + "?${PLAYLIST_ID_ARG}={$PLAYLIST_ID_ARG}",
+            route = Screen.PlaylistInfoScreen.fullRoute,
             arguments = listOf(
                 navArgument(PLAYLIST_ID_ARG) {
                     type = NavType.LongType
@@ -113,7 +113,7 @@ fun AppNavigation(
             PlaylistInfoScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            route = Screen.AlbumInfoScreen.route + "?${ALBUM_ID_ARG}={$ALBUM_ID_ARG}",
+            route = Screen.AlbumInfoScreen.fullRoute,
             arguments = listOf(
                 navArgument(ALBUM_ID_ARG) {
                     type = NavType.LongType
@@ -144,7 +144,7 @@ fun AppNavigation(
             AlbumInfoScreen(navController = navController, mainViewModel = mainViewModel)
         }
         composable(
-            route = Screen.ArtistInfoScreen.route + "?${ARTIST_ID_ARG}={$ARTIST_ID_ARG}",
+            route = Screen.ArtistInfoScreen.fullRoute,
             arguments = listOf(
                 navArgument(ARTIST_ID_ARG) {
                     type = NavType.LongType
